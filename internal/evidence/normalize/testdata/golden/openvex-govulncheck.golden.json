@@ -1,0 +1,43 @@
+{
+  "format": "openvex",
+  "formatVersion": "0.2.0",
+  "tool": {
+    "name": "https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck"
+  },
+  "vex": [
+    {
+      "vulnId": "CVE-2022-32149",
+      "products": [
+        "Unknown Product",
+        "pkg:golang/golang.org%2Fx%2Ftext@v0.3.7"
+      ],
+      "status": "affected",
+      "author": "Unknown Author",
+      "timestamp": "2026-10-26T18:36:38.352991425Z"
+    },
+    {
+      "vulnId": "CVE-2023-39325",
+      "products": [
+        "Unknown Product",
+        "pkg:golang/golang.org%2Fx%2Fnet@v0.0.0-20220722155237-a158d28d115b"
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impactStatement": "Govulncheck determined that the vulnerable code isn't called",
+      "author": "Unknown Author",
+      "timestamp": "2026-10-26T18:36:38.352991425Z"
+    },
+    {
+      "vulnId": "CVE-2026-25681",
+      "products": [
+        "Unknown Product",
+        "pkg:golang/golang.org%2Fx%2Fnet@v0.0.0-20220722155237-a158d28d115b"
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impactStatement": "Govulncheck determined that the vulnerable code isn't called",
+      "author": "Unknown Author",
+      "timestamp": "2026-10-26T18:36:38.352991425Z"
+    }
+  ]
+}

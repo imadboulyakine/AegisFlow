@@ -1,0 +1,77 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "https://aegisflow.example/vex/2026-10-26-0001",
+  "author": "AegisFlow maintainers <security@aegisflow.example>",
+  "role": "Document Creator",
+  "timestamp": "2026-10-26T12:00:00Z",
+  "last_updated": "2026-10-26T13:30:00Z",
+  "version": 2,
+  "tooling": "vexctl/0.3.0",
+  "statements": [
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2022-1059",
+        "name": "GO-2022-1059",
+        "aliases": [
+          "CVE-2022-32149",
+          "GHSA-69ch-w2m2-3vjp"
+        ]
+      },
+      "products": [
+        {
+          "@id": "pkg:oci/aegisflow-demo@sha256%3A18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org/x/text@v0.3.7"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "ParseAcceptLanguage is only called on a constant string.",
+      "timestamp": "2026-10-26T13:30:00Z"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2005-2541"
+      },
+      "products": [
+        {
+          "identifiers": {
+            "purl": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13"
+          }
+        },
+        {
+          "hashes": {
+            "sha-256": "18F4CC26C9FFA7F20A359298BE7DEADAC5C607C8E03A02B8119F1A5FC2F82C99"
+          }
+        }
+      ],
+      "status": "fixed"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://github.com/advisories/GHSA-xxxx-fixture-0002"
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b"
+        }
+      ],
+      "status": "under_investigation"
+    },
+    {
+      "vulnerability": {
+        "name": "CVE-2023-3978"
+      },
+      "products": [
+        {
+          "@id": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b"
+        }
+      ],
+      "status": "affected",
+      "action_statement": "Upgrade golang.org/x/net to v0.13.0 or later."
+    }
+  ]
+}

@@ -1,0 +1,306 @@
+{
+  "spdxVersion": "SPDX-2.3",
+  "dataLicense": "CC0-1.0",
+  "SPDXID": "SPDXRef-DOCUMENT",
+  "name": "gcr.io/distroless/static-debian13",
+  "documentNamespace": "https://anchore.com/syft/image/gcr.io/distroless/static-debian13-39b54023-75a2-4a4c-a190-753caf540252",
+  "creationInfo": {
+    "licenseListVersion": "3.29",
+    "creators": [
+      "Organization: Anchore, Inc",
+      "Tool: syft-1.55.0"
+    ],
+    "created": "2026-10-26T18:38:23Z"
+  },
+  "packages": [
+    {
+      "name": "base-files",
+      "SPDXID": "SPDXRef-Package-deb-base-files-df2661979f9bc8c5",
+      "versionInfo": "13.8+deb13u7",
+      "supplier": "Person: Santiago Vila (sanvila@debian.org)",
+      "originator": "Person: Santiago Vila (sanvila@debian.org)",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "607d89fd2b47072e95b28aee822db8b58f27c332"
+      },
+      "sourceInfo": "acquired package info from DPKG DB: /var/lib/dpkg/status.d/base-files, /usr/share/doc/base-files/copyright, /var/lib/dpkg/status.d/base-files.md5sums",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-verbatim",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:base-files:base-files:13.8\\+deb13u7:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:base-files:base_files:13.8\\+deb13u7:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:base_files:base-files:13.8\\+deb13u7:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:base_files:base_files:13.8\\+deb13u7:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:base:base-files:13.8\\+deb13u7:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:base:base_files:13.8\\+deb13u7:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:deb/debian/base-files@13.8%2Bdeb13u7?arch=amd64&distro=debian-13.7"
+        }
+      ]
+    },
+    {
+      "name": "ca-certificates",
+      "SPDXID": "SPDXRef-Package-deb-ca-certificates-64fd49a5d444c8ed",
+      "versionInfo": "20250419+deb13u1",
+      "supplier": "Person: Julien Cristau (jcristau@debian.org)",
+      "originator": "Person: Julien Cristau (jcristau@debian.org)",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "bf11552a73ec75b95fdb3374baa174637cc2293a"
+      },
+      "sourceInfo": "acquired package info from DPKG DB: /var/lib/dpkg/status.d/ca-certificates, /usr/share/doc/ca-certificates/copyright, /var/lib/dpkg/status.d/ca-certificates.md5sums",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "GPL-2.0-only AND GPL-2.0-or-later AND MPL-2.0",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:ca-certificates:ca-certificates:20250419\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:ca-certificates:ca_certificates:20250419\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:ca_certificates:ca-certificates:20250419\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:ca_certificates:ca_certificates:20250419\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:ca:ca-certificates:20250419\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:ca:ca_certificates:20250419\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:deb/debian/ca-certificates@20250419%2Bdeb13u1?arch=all&distro=debian-13.7"
+        }
+      ]
+    },
+    {
+      "name": "tzdata",
+      "SPDXID": "SPDXRef-Package-deb-tzdata-bdd6b35c9f89cc4b",
+      "versionInfo": "2026e-0+deb13u1",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "6452fa420a9afdb933d62d6b3cff9a584e0c0259"
+      },
+      "sourceInfo": "acquired package info from DPKG DB: /var/lib/dpkg/status.d/tzdata, /usr/share/doc/tzdata/copyright, /var/lib/dpkg/status.d/tzdata.md5sums",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "LicenseRef-public-domain",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata:tzdata:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:deb/debian/tzdata@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7"
+        }
+      ]
+    },
+    {
+      "name": "tzdata-legacy",
+      "SPDXID": "SPDXRef-Package-deb-tzdata-legacy-7a3d33d4ed22d589",
+      "versionInfo": "2026e-0+deb13u1",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": true,
+      "packageVerificationCode": {
+        "packageVerificationCodeValue": "a74e259fe9aa610b5c40dd100d51becafc65ad3b"
+      },
+      "sourceInfo": "acquired package info from DPKG DB: /var/lib/dpkg/status.d/tzdata-legacy, /usr/share/doc/tzdata-legacy/copyright, /var/lib/dpkg/status.d/tzdata-legacy.md5sums",
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "LicenseRef-public-domain",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata-legacy:tzdata-legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata-legacy:tzdata_legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata_legacy:tzdata-legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata_legacy:tzdata_legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata:tzdata-legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "SECURITY",
+          "referenceType": "cpe23Type",
+          "referenceLocator": "cpe:2.3:a:tzdata:tzdata_legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*"
+        },
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:deb/debian/tzdata-legacy@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&upstream=tzdata"
+        }
+      ]
+    },
+    {
+      "name": "gcr.io/distroless/static-debian13",
+      "SPDXID": "SPDXRef-DocumentRoot-Image-gcr.io-distroless-static-debian13",
+      "versionInfo": "nonroot",
+      "supplier": "NOASSERTION",
+      "downloadLocation": "NOASSERTION",
+      "filesAnalyzed": false,
+      "checksums": [
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "433bb346cd0b6b8346462f879adaa4ac0fbb463a72901b46736ede4aeca3dadc"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseDeclared": "NOASSERTION",
+      "copyrightText": "NOASSERTION",
+      "externalRefs": [
+        {
+          "referenceCategory": "PACKAGE-MANAGER",
+          "referenceType": "purl",
+          "referenceLocator": "pkg:oci/gcr.io%2Fdistroless%2Fstatic-debian13@sha256%3A433bb346cd0b6b8346462f879adaa4ac0fbb463a72901b46736ede4aeca3dadc?arch=amd64&tag=nonroot"
+        }
+      ],
+      "primaryPackagePurpose": "CONTAINER"
+    }
+  ],
+  "files": [
+    {
+      "fileName": "usr/lib/os-release",
+      "SPDXID": "SPDXRef-File-usr-lib-os-release-b4e6f97c88b58560",
+      "fileTypes": [
+        "TEXT"
+      ],
+      "checksums": [
+        {
+          "algorithm": "SHA1",
+          "checksumValue": "f9e11c4fa1bdf2aad43c45bffd46f62246692e55"
+        },
+        {
+          "algorithm": "SHA256",
+          "checksumValue": "b4d56a90bdd55b9d5b9b4acabfe748f559e505e340d2d93097937e11ee423cc1"
+        }
+      ],
+      "licenseConcluded": "NOASSERTION",
+      "licenseInfoInFiles": [
+        "NOASSERTION"
+      ],
+      "copyrightText": "NOASSERTION",
+      "comment": "layerID: sha256:187cfc6d1e3e8a40a5e64653bcd3239c140807dcf1c09e48021178705a5a6139"
+    }
+  ],
+  "hasExtractedLicensingInfos": [
+    {
+      "licenseId": "LicenseRef-ad-hoc",
+      "extractedText": "NOASSERTION",
+      "name": "ad-hoc"
+    },
+    {
+      "licenseId": "LicenseRef-public-domain",
+      "extractedText": "NOASSERTION",
+      "name": "public-domain"
+    },
+    {
+      "licenseId": "LicenseRef-verbatim",
+      "extractedText": "NOASSERTION",
+      "name": "verbatim"
+    }
+  ],
+  "relationships": [
+    {
+      "spdxElementId": "SPDXRef-Package-deb-base-files-df2661979f9bc8c5",
+      "relatedSpdxElement": "SPDXRef-File-usr-lib-os-release-b4e6f97c88b58560",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-Package-deb-tzdata-bdd6b35c9f89cc4b",
+      "relatedSpdxElement": "SPDXRef-Package-deb-tzdata-legacy-7a3d33d4ed22d589",
+      "relationshipType": "DEPENDENCY_OF"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Image-gcr.io-distroless-static-debian13",
+      "relatedSpdxElement": "SPDXRef-Package-deb-base-files-df2661979f9bc8c5",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Image-gcr.io-distroless-static-debian13",
+      "relatedSpdxElement": "SPDXRef-Package-deb-ca-certificates-64fd49a5d444c8ed",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Image-gcr.io-distroless-static-debian13",
+      "relatedSpdxElement": "SPDXRef-Package-deb-tzdata-bdd6b35c9f89cc4b",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DocumentRoot-Image-gcr.io-distroless-static-debian13",
+      "relatedSpdxElement": "SPDXRef-Package-deb-tzdata-legacy-7a3d33d4ed22d589",
+      "relationshipType": "CONTAINS"
+    },
+    {
+      "spdxElementId": "SPDXRef-DOCUMENT",
+      "relatedSpdxElement": "SPDXRef-DocumentRoot-Image-gcr.io-distroless-static-debian13",
+      "relationshipType": "DESCRIBES"
+    }
+  ]
+}

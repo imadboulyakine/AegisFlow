@@ -1,0 +1,40 @@
+{
+  "format": "cyclonedx",
+  "formatVersion": "1.4",
+  "tool": {
+    "name": "syft",
+    "version": "1.55.0"
+  },
+  "subject": {
+    "kind": "source",
+    "name": "example.com/vulnapp"
+  },
+  "components": [
+    {
+      "purl": "pkg:golang/example.com/vulnapp",
+      "name": "example.com/vulnapp",
+      "version": "UNKNOWN",
+      "ecosystem": "golang"
+    },
+    {
+      "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "name": "golang.org/x/net",
+      "version": "v0.0.0-20220722155237-a158d28d115b",
+      "ecosystem": "golang",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "direct": true
+    },
+    {
+      "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+      "name": "golang.org/x/text",
+      "version": "v0.3.7",
+      "ecosystem": "golang",
+      "licenses": [
+        "BSD-3-Clause"
+      ],
+      "direct": true
+    }
+  ]
+}

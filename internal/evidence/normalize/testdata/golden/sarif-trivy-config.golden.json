@@ -1,0 +1,86 @@
+{
+  "format": "sarif",
+  "formatVersion": "2.1.0",
+  "tool": {
+    "name": "Trivy",
+    "version": "0.76.1"
+  },
+  "findings": [
+    {
+      "kind": "config",
+      "fingerprint": "dbb19ef04bad64abbc2986270cb1aa2e9cd2dba29e96a141263c5b02af71201e",
+      "title": "':latest' tag used",
+      "message": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0001\nSeverity: MEDIUM\nMessage: Specify a tag in the 'FROM' statement for image 'alpine'\nLink: [DS-0001](https://avd.aquasec.com/misconfig/ds-0001)",
+      "severity": "medium",
+      "ruleId": "DS-0001",
+      "tools": [
+        {
+          "name": "Trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "location": {
+        "path": "Dockerfile",
+        "startLine": 1,
+        "endLine": 1
+      }
+    },
+    {
+      "kind": "config",
+      "fingerprint": "264abc9e1bfeccd441f5521d34634eebda0adfa18476f9385aae8f55793ae03e",
+      "title": "Image user should not be 'root'",
+      "message": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0002\nSeverity: HIGH\nMessage: Specify at least 1 USER command in Dockerfile with non-root user as argument\nLink: [DS-0002](https://avd.aquasec.com/misconfig/ds-0002)",
+      "severity": "high",
+      "ruleId": "DS-0002",
+      "tools": [
+        {
+          "name": "Trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "location": {
+        "path": "Dockerfile",
+        "startLine": 1,
+        "endLine": 1
+      }
+    },
+    {
+      "kind": "config",
+      "fingerprint": "158fd7f131a31d8de4da68ea89be8ecedbbc2c2fd0ffff0c29a0e8fb767b45d0",
+      "title": "'apk add' is missing '--no-cache'",
+      "message": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0025\nSeverity: HIGH\nMessage: '--no-cache' is missed: apk add curl\nLink: [DS-0025](https://avd.aquasec.com/misconfig/ds-0025)",
+      "severity": "high",
+      "ruleId": "DS-0025",
+      "tools": [
+        {
+          "name": "Trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "location": {
+        "path": "Dockerfile",
+        "startLine": 2,
+        "endLine": 2
+      }
+    },
+    {
+      "kind": "config",
+      "fingerprint": "6e6c948892aa645f3f8cce8395ef8c37bd88eda9f4fe3fe8336437ef2b9f8fff",
+      "title": "No HEALTHCHECK defined",
+      "message": "Artifact: Dockerfile\nType: dockerfile\nVulnerability DS-0026\nSeverity: LOW\nMessage: Add HEALTHCHECK instruction in your Dockerfile\nLink: [DS-0026](https://avd.aquasec.com/misconfig/ds-0026)",
+      "severity": "low",
+      "ruleId": "DS-0026",
+      "tools": [
+        {
+          "name": "Trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "location": {
+        "path": "Dockerfile",
+        "startLine": 1,
+        "endLine": 1
+      }
+    }
+  ]
+}

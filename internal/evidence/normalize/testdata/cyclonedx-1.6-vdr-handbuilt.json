@@ -1,0 +1,251 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:8b7a6c5d-4e3f-4a2b-9c1d-0e9f8a7b6c5d",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-26T18:00:00+00:00",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "group": "aquasecurity",
+          "name": "trivy",
+          "version": "0.76.1"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "pkg:oci/aegisflow-demo@sha256%3A18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99?arch=amd64&repository_url=ghcr.io%2Fimadboulyakine%2Faegisflow-demo",
+      "type": "container",
+      "name": "ghcr.io/imadboulyakine/aegisflow-demo:1.0.0",
+      "purl": "pkg:oci/aegisflow-demo@sha256%3A18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99?arch=amd64&repository_url=ghcr.io%2Fimadboulyakine%2Faegisflow-demo",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:ImageID",
+          "value": "sha256:0a2f4c688090d2a660f55dec3808f6bb85246b9ec1f78ced5d43275a1fb2287d"
+        },
+        {
+          "name": "aquasecurity:trivy:RepoDigest",
+          "value": "ghcr.io/imadboulyakine/aegisflow-demo@sha256:18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99"
+        },
+        {
+          "name": "aquasecurity:trivy:SchemaVersion",
+          "value": "2"
+        }
+      ]
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "type": "application",
+      "name": "usr/local/bin/vulnapp",
+      "properties": [
+        {
+          "name": "aquasecurity:trivy:Type",
+          "value": "gobinary"
+        }
+      ],
+      "components": [
+        {
+          "bom-ref": "pkg:golang/golang.org/x/text@v0.3.7",
+          "type": "library",
+          "name": "golang.org/x/text",
+          "version": "v0.3.7",
+          "licenses": [
+            {
+              "license": {
+                "id": "BSD-3-Clause"
+              }
+            }
+          ],
+          "purl": "pkg:golang/golang.org/x/text@v0.3.7"
+        },
+        {
+          "bom-ref": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+          "type": "library",
+          "name": "golang.org/x/net",
+          "version": "v0.0.0-20220722155237-a158d28d115b",
+          "licenses": [
+            {
+              "expression": "BSD-3-Clause"
+            }
+          ],
+          "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13",
+      "type": "library",
+      "name": "tar",
+      "version": "1.35+dfsg-3.1",
+      "licenses": [
+        {
+          "expression": "GPL-2.0-only OR GPL-3.0-only"
+        }
+      ],
+      "purl": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13"
+    },
+    {
+      "bom-ref": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13&dup=1",
+      "type": "library",
+      "name": "tar",
+      "version": "1.35+dfsg-3.1",
+      "licenses": [
+        {
+          "license": {
+            "name": "GPL-3.0-or-later"
+          }
+        }
+      ],
+      "purl": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13"
+    },
+    {
+      "bom-ref": "d1e2f3a4-0000-4000-8000-000000000002",
+      "type": "operating-system",
+      "name": "debian",
+      "version": "13.7"
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:oci/aegisflow-demo@sha256%3A18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99?arch=amd64&repository_url=ghcr.io%2Fimadboulyakine%2Faegisflow-demo",
+      "dependsOn": [
+        "3ff14136-e09f-4df9-80ea-000000000001",
+        "d1e2f3a4-0000-4000-8000-000000000002"
+      ]
+    },
+    {
+      "ref": "3ff14136-e09f-4df9-80ea-000000000001",
+      "dependsOn": [
+        "pkg:golang/golang.org/x/text@v0.3.7",
+        "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b"
+      ]
+    },
+    {
+      "ref": "d1e2f3a4-0000-4000-8000-000000000002",
+      "dependsOn": [
+        "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13"
+      ]
+    }
+  ],
+  "vulnerabilities": [
+    {
+      "bom-ref": "vuln-1",
+      "id": "CVE-2022-32149",
+      "source": {
+        "name": "ghsa",
+        "url": "https://github.com/advisories/GHSA-69ch-w2m2-3vjp"
+      },
+      "references": [
+        {
+          "id": "GHSA-69ch-w2m2-3vjp",
+          "source": {
+            "name": "ghsa",
+            "url": "https://github.com/advisories/GHSA-69ch-w2m2-3vjp"
+          }
+        }
+      ],
+      "ratings": [
+        {
+          "source": {
+            "name": "ghsa"
+          },
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 7.5,
+          "severity": "high",
+          "method": "CVSSv31",
+          "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H"
+        }
+      ],
+      "cwes": [
+        772
+      ],
+      "description": "An attacker may cause a denial of service by crafting an Accept-Language header which ParseAcceptLanguage will take significant time to parse.",
+      "recommendation": "Upgrade golang.org/x/text to version 0.3.8",
+      "published": "2022-10-14T15:15:00+00:00",
+      "updated": "2023-11-07T03:47:00+00:00",
+      "affects": [
+        {
+          "ref": "pkg:golang/golang.org/x/text@v0.3.7",
+          "versions": [
+            {
+              "version": "v0.3.7",
+              "status": "affected"
+            }
+          ]
+        }
+      ],
+      "analysis": {
+        "state": "exploitable",
+        "detail": "ParseAcceptLanguage is reachable from the public HTTP handler."
+      }
+    },
+    {
+      "bom-ref": "vuln-2",
+      "id": "CVE-2005-2541",
+      "ratings": [
+        {
+          "source": {
+            "name": "debian"
+          },
+          "severity": "info",
+          "method": "other"
+        },
+        {
+          "source": {
+            "name": "nvd"
+          },
+          "score": 10,
+          "method": "CVSSv2",
+          "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C"
+        }
+      ],
+      "description": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files.",
+      "affects": [
+        {
+          "ref": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13"
+        }
+      ],
+      "analysis": {
+        "state": "not_affected",
+        "justification": "code_not_reachable",
+        "detail": "The image never invokes tar.",
+        "lastUpdated": "2026-10-20T10:00:00Z"
+      }
+    },
+    {
+      "id": "GHSA-xxxx-fixture-0001",
+      "ratings": [
+        {
+          "score": 5.3,
+          "method": "CVSSv4",
+          "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N"
+        }
+      ],
+      "description": "Synthetic advisory (fixture only) with a CVSS v4 rating and no qualitative severity.",
+      "affects": [
+        {
+          "ref": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b"
+        },
+        {
+          "ref": "pkg:npm/%40fixture/unlisted@1.2.3"
+        },
+        {
+          "ref": "urn:cdx:3e671687-395b-41f5-a30f-a58921a69b79/1#unknown-component"
+        }
+      ]
+    }
+  ]
+}

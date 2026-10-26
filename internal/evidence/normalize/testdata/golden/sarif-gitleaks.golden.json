@@ -1,0 +1,48 @@
+{
+  "format": "sarif",
+  "formatVersion": "2.1.0",
+  "tool": {
+    "name": "gitleaks",
+    "version": "v8.0.0"
+  },
+  "findings": [
+    {
+      "kind": "secret",
+      "fingerprint": "3dc45033d5d75ede28661cff2f501e65962ab360b004bd95fea37cbab6881f80",
+      "title": "Identified a pattern that may indicate AWS credentials, risking unauthorized cloud resource access and data breaches on AWS platforms.",
+      "message": "aws-access-token has detected secret for file config.env.",
+      "severity": "high",
+      "ruleId": "aws-access-token",
+      "tools": [
+        {
+          "name": "gitleaks",
+          "version": "v8.0.0"
+        }
+      ],
+      "location": {
+        "path": "config.env",
+        "startLine": 2,
+        "endLine": 2
+      }
+    },
+    {
+      "kind": "secret",
+      "fingerprint": "b346e4907f85dee7c4d13442846b0c56e08a308ab0f7961ef7d37d90278833a9",
+      "title": "Uncovered a GitHub Personal Access Token, potentially leading to unauthorized repository access and sensitive content exposure.",
+      "message": "github-pat has detected secret for file deploy.sh.",
+      "severity": "high",
+      "ruleId": "github-pat",
+      "tools": [
+        {
+          "name": "gitleaks",
+          "version": "v8.0.0"
+        }
+      ],
+      "location": {
+        "path": "deploy.sh",
+        "startLine": 3,
+        "endLine": 3
+      }
+    }
+  ]
+}

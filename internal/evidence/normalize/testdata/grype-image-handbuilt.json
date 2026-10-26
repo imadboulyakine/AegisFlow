@@ -1,0 +1,363 @@
+{
+  "matches": [
+    {
+      "vulnerability": {
+        "id": "GHSA-69ch-w2m2-3vjp",
+        "dataSource": "https://github.com/advisories/GHSA-69ch-w2m2-3vjp",
+        "namespace": "github:language:go",
+        "severity": "High",
+        "urls": [
+          "https://github.com/advisories/GHSA-69ch-w2m2-3vjp"
+        ],
+        "description": "golang.org/x/text/language Denial of service via crafted Accept-Language header",
+        "cvss": [
+          {
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "metrics": {
+              "baseScore": 7.5,
+              "exploitabilityScore": 3.9,
+              "impactScore": 3.6
+            },
+            "vendorMetadata": {}
+          }
+        ],
+        "fix": {
+          "versions": [
+            "0.3.8"
+          ],
+          "state": "fixed"
+        },
+        "advisories": []
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2022-32149",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2022-32149",
+          "namespace": "nvd:cpe",
+          "severity": "High",
+          "urls": [
+            "https://go.dev/issue/56152"
+          ],
+          "description": "An attacker may cause a denial of service by crafting an Accept-Language header which ParseAcceptLanguage will take significant time to parse.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 7.5,
+                "exploitabilityScore": 3.9,
+                "impactScore": 3.6
+              },
+              "vendorMetadata": {}
+            }
+          ],
+          "cwes": [
+            {
+              "cve": "CVE-2022-32149",
+              "cwe": "CWE-772",
+              "source": "nvd@nist.gov",
+              "type": "Primary"
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "go-module-matcher",
+          "searchedBy": {
+            "language": "go",
+            "namespace": "github:language:go",
+            "package": {
+              "name": "golang.org/x/text",
+              "version": "v0.3.7"
+            }
+          },
+          "found": {
+            "versionConstraint": "<0.3.8 (unknown)",
+            "vulnerabilityID": "GHSA-69ch-w2m2-3vjp"
+          },
+          "fix": {
+            "suggestedVersion": "0.3.8"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "a65de2ac909160da",
+        "name": "golang.org/x/text",
+        "version": "v0.3.7",
+        "type": "go-module",
+        "locations": [
+          {
+            "path": "/usr/local/bin/vulnapp",
+            "layerID": "sha256:2cc7ee286bf3a9e6af5f71756d7fc8e22e23ce65fec9047d774511ffcef79fa8"
+          }
+        ],
+        "language": "go",
+        "licenses": [
+          "BSD-3-Clause"
+        ],
+        "cpes": [
+          "cpe:2.3:a:golang:text:v0.3.7:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+        "upstreams": [],
+        "metadataType": "go-module-buildinfo-entry",
+        "metadata": {
+          "goCompiledVersion": "go1.27.3",
+          "architecture": "amd64",
+          "mainModule": "example.com/vulnapp"
+        }
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "GHSA-69ch-w2m2-3vjp",
+        "dataSource": "https://github.com/advisories/GHSA-69ch-w2m2-3vjp",
+        "namespace": "github:language:go",
+        "severity": "High",
+        "urls": [],
+        "description": "golang.org/x/text/language Denial of service via crafted Accept-Language header",
+        "cvss": [],
+        "fix": {
+          "versions": [
+            "0.3.8"
+          ],
+          "state": "fixed"
+        },
+        "advisories": []
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2022-32149",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2022-32149",
+          "namespace": "nvd:cpe",
+          "severity": "High",
+          "urls": [],
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "3.1",
+              "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+              "metrics": {
+                "baseScore": 7.5
+              },
+              "vendorMetadata": {}
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-direct-match",
+          "matcher": "go-module-matcher",
+          "searchedBy": {
+            "language": "go",
+            "namespace": "github:language:go",
+            "package": {
+              "name": "golang.org/x/text",
+              "version": "v0.3.7"
+            }
+          },
+          "found": {
+            "versionConstraint": "<0.3.8 (unknown)",
+            "vulnerabilityID": "GHSA-69ch-w2m2-3vjp"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "f1b2c3d4e5f60718",
+        "name": "golang.org/x/text",
+        "version": "v0.3.7",
+        "type": "go-module",
+        "locations": [
+          {
+            "path": "/usr/local/bin/helper",
+            "layerID": "sha256:2cc7ee286bf3a9e6af5f71756d7fc8e22e23ce65fec9047d774511ffcef79fa8"
+          }
+        ],
+        "language": "go",
+        "licenses": [],
+        "cpes": [],
+        "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+        "upstreams": []
+      }
+    },
+    {
+      "vulnerability": {
+        "id": "CVE-2005-2541",
+        "dataSource": "https://security-tracker.debian.org/tracker/CVE-2005-2541",
+        "namespace": "debian:distro:debian:13",
+        "severity": "Negligible",
+        "urls": [
+          "https://security-tracker.debian.org/tracker/CVE-2005-2541"
+        ],
+        "cvss": [],
+        "fix": {
+          "versions": [],
+          "state": "wont-fix"
+        },
+        "advisories": []
+      },
+      "relatedVulnerabilities": [
+        {
+          "id": "CVE-2005-2541",
+          "dataSource": "https://nvd.nist.gov/vuln/detail/CVE-2005-2541",
+          "namespace": "nvd:cpe",
+          "severity": "High",
+          "urls": [],
+          "description": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files, which may allow local users or remote attackers to gain privileges.",
+          "cvss": [
+            {
+              "source": "nvd@nist.gov",
+              "type": "Primary",
+              "version": "2.0",
+              "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
+              "metrics": {
+                "baseScore": 10,
+                "exploitabilityScore": 10,
+                "impactScore": 10
+              },
+              "vendorMetadata": {}
+            }
+          ]
+        }
+      ],
+      "matchDetails": [
+        {
+          "type": "exact-indirect-match",
+          "matcher": "dpkg-matcher",
+          "searchedBy": {
+            "distro": {
+              "type": "debian",
+              "version": "13"
+            },
+            "namespace": "debian:distro:debian:13",
+            "package": {
+              "name": "tar",
+              "version": "1.35+dfsg-3.1"
+            }
+          },
+          "found": {
+            "versionConstraint": "none (deb)",
+            "vulnerabilityID": "CVE-2005-2541"
+          }
+        }
+      ],
+      "artifact": {
+        "id": "4b0e6f1d2c3a5978",
+        "name": "tar",
+        "version": "1.35+dfsg-3.1",
+        "type": "deb",
+        "locations": [
+          {
+            "path": "/var/lib/dpkg/status",
+            "layerID": "sha256:9486261b5a13f63ca6904b36721527ac8f19df53d300560138d69ae9b4c203de"
+          }
+        ],
+        "language": "",
+        "licenses": [
+          "GPL-2.0-only",
+          "GPL-3.0-only"
+        ],
+        "cpes": [
+          "cpe:2.3:a:gnu:tar:1.35\\+dfsg-3.1:*:*:*:*:*:*:*"
+        ],
+        "purl": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13",
+        "upstreams": []
+      }
+    }
+  ],
+  "ignoredMatches": [
+    {
+      "vulnerability": {
+        "id": "CVE-2099-0001",
+        "namespace": "debian:distro:debian:13",
+        "severity": "Low",
+        "urls": [],
+        "cvss": [],
+        "fix": {
+          "versions": [],
+          "state": "not-fixed"
+        },
+        "advisories": []
+      },
+      "relatedVulnerabilities": [],
+      "matchDetails": [],
+      "artifact": {
+        "id": "0a1b2c3d4e5f6071",
+        "name": "tzdata",
+        "version": "2026e-0+deb13u1",
+        "type": "deb",
+        "locations": [],
+        "language": "",
+        "licenses": [],
+        "cpes": [],
+        "purl": "pkg:deb/debian/tzdata@2026e-0%2Bdeb13u1?arch=all&distro=debian-13",
+        "upstreams": []
+      },
+      "appliedIgnoreRules": [
+        {
+          "vulnerability": "CVE-2099-0001",
+          "reason": "fixture: ignored by configuration"
+        }
+      ]
+    }
+  ],
+  "source": {
+    "type": "image",
+    "target": {
+      "userInput": "ghcr.io/imadboulyakine/aegisflow-demo:1.0.0",
+      "imageID": "sha256:0a2f4c688090d2a660f55dec3808f6bb85246b9ec1f78ced5d43275a1fb2287d",
+      "manifestDigest": "sha256:433bb346cd0b6b8346462f879adaa4ac0fbb463a72901b46736ede4aeca3dadc",
+      "mediaType": "application/vnd.oci.image.manifest.v1+json",
+      "tags": [
+        "ghcr.io/imadboulyakine/aegisflow-demo:1.0.0"
+      ],
+      "imageSize": 2368868,
+      "layers": [
+        {
+          "mediaType": "application/vnd.oci.image.layer.v1.tar+gzip",
+          "digest": "sha256:9486261b5a13f63ca6904b36721527ac8f19df53d300560138d69ae9b4c203de",
+          "size": 307200
+        }
+      ],
+      "manifest": "",
+      "config": "",
+      "repoDigests": [
+        "ghcr.io/imadboulyakine/aegisflow-demo@sha256:18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99"
+      ],
+      "architecture": "amd64",
+      "os": "linux"
+    }
+  },
+  "distro": {
+    "name": "debian",
+    "version": "13",
+    "idLike": []
+  },
+  "descriptor": {
+    "name": "grype",
+    "version": "0.121.0",
+    "configuration": {
+      "output": [
+        "json"
+      ],
+      "only-fixed": false
+    },
+    "db": {
+      "status": {
+        "schemaVersion": "v6.1.0",
+        "from": "https://grype.anchore.io/databases/v6/vulnerability-db_v6.1.0.tar.zst",
+        "built": "2026-10-25T04:12:00Z",
+        "path": "/root/.cache/grype/db/6/vulnerability.db",
+        "valid": true
+      }
+    },
+    "timestamp": "2026-10-26T18:00:00.000000000Z"
+  }
+}

@@ -1,0 +1,105 @@
+{
+  "format": "sarif",
+  "formatVersion": "2.1.0",
+  "tool": {
+    "name": "gosec",
+    "version": "2.30.0"
+  },
+  "findings": [
+    {
+      "kind": "code",
+      "fingerprint": "716c06816885778c310a1423eeb523ea7adba0ac8467a0faa1874334f1f6b7d1",
+      "title": "Path traversal via taint analysis: os.ReadFile",
+      "message": "Path traversal via taint analysis: os.ReadFile",
+      "severity": "high",
+      "ruleId": "G703",
+      "tools": [
+        {
+          "name": "gosec",
+          "version": "2.30.0"
+        }
+      ],
+      "location": {
+        "path": "main.go",
+        "startLine": 15,
+        "endLine": 15
+      }
+    },
+    {
+      "kind": "code",
+      "fingerprint": "c0577705cf847402987a443f83d65267ce6af50265927f5931382de8b2e00c68",
+      "title": "Command injection via taint analysis: os/exec.Command",
+      "message": "Command injection via taint analysis: os/exec.Command",
+      "severity": "high",
+      "ruleId": "G702",
+      "tools": [
+        {
+          "name": "gosec",
+          "version": "2.30.0"
+        }
+      ],
+      "location": {
+        "path": "main.go",
+        "startLine": 14,
+        "endLine": 14
+      }
+    },
+    {
+      "kind": "code",
+      "fingerprint": "58bb26919e380d27c6f6d4d0bb91e1d2463aeb8e6300855eaace78dcd9e9d543",
+      "title": "Use of weak cryptographic primitive",
+      "message": "Use of weak cryptographic primitive",
+      "severity": "medium",
+      "ruleId": "G401",
+      "tools": [
+        {
+          "name": "gosec",
+          "version": "2.30.0"
+        }
+      ],
+      "location": {
+        "path": "main.go",
+        "startLine": 12,
+        "endLine": 12
+      }
+    },
+    {
+      "kind": "code",
+      "fingerprint": "9125bbe18aaa96ace5879d390899e3506789321905acf2f57b59a6222aa7e33f",
+      "title": "Subprocess launched with a potential tainted input or cmd arguments",
+      "message": "Subprocess launched with a potential tainted input or cmd arguments",
+      "severity": "medium",
+      "ruleId": "G204",
+      "tools": [
+        {
+          "name": "gosec",
+          "version": "2.30.0"
+        }
+      ],
+      "location": {
+        "path": "main.go",
+        "startLine": 14,
+        "endLine": 14
+      }
+    },
+    {
+      "kind": "code",
+      "fingerprint": "fd47d3edd7b0d27f2c0278d3eff798ed66298e0e9e586a7c03b1f5ee81a2aaeb",
+      "title": "Blocklisted import crypto/md5: weak cryptographic primitive",
+      "message": "Blocklisted import crypto/md5: weak cryptographic primitive",
+      "severity": "medium",
+      "ruleId": "G501",
+      "tools": [
+        {
+          "name": "gosec",
+          "version": "2.30.0"
+        }
+      ],
+      "location": {
+        "path": "main.go",
+        "startLine": 5,
+        "endLine": 5
+      }
+    }
+  ]
+}

@@ -1,0 +1,232 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.6.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.6",
+  "serialNumber": "urn:uuid:c04bff75-9cd4-411b-84a2-a4d8bb80f75f",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-26T18:39:48Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.55.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "5197f22c49dae070",
+      "type": "container",
+      "name": "gcr.io/distroless/static-debian13",
+      "version": "nonroot"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:deb/debian/base-files@13.8%2Bdeb13u7?arch=amd64&distro=debian-13.7&package-id=df2661979f9bc8c5",
+      "type": "library",
+      "publisher": "Santiago Vila <sanvila@debian.org>",
+      "name": "base-files",
+      "version": "13.8+deb13u7",
+      "licenses": [
+        {
+          "license": {
+            "id": "GPL-2.0-only"
+          }
+        },
+        {
+          "license": {
+            "id": "GPL-2.0-or-later"
+          }
+        },
+        {
+          "license": {
+            "name": "verbatim"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:base-files:base-files:13.8\\+deb13u7:*:*:*:*:*:*:*",
+      "purl": "pkg:deb/debian/base-files@13.8%2Bdeb13u7?arch=amd64&distro=debian-13.7",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "dpkg-db-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "deb"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "dpkg-db-entry"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/ca-certificates@20250419%2Bdeb13u1?arch=all&distro=debian-13.7&package-id=64fd49a5d444c8ed",
+      "type": "library",
+      "publisher": "Julien Cristau <jcristau@debian.org>",
+      "name": "ca-certificates",
+      "version": "20250419+deb13u1",
+      "licenses": [
+        {
+          "license": {
+            "id": "GPL-2.0-only"
+          }
+        },
+        {
+          "license": {
+            "id": "GPL-2.0-or-later"
+          }
+        },
+        {
+          "license": {
+            "id": "MPL-2.0"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:ca-certificates:ca-certificates:20250419\\+deb13u1:*:*:*:*:*:*:*",
+      "purl": "pkg:deb/debian/ca-certificates@20250419%2Bdeb13u1?arch=all&distro=debian-13.7",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "dpkg-db-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "deb"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "dpkg-db-entry"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/tzdata@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&package-id=bdd6b35c9f89cc4b",
+      "type": "library",
+      "publisher": "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+      "name": "tzdata",
+      "version": "2026e-0+deb13u1",
+      "licenses": [
+        {
+          "license": {
+            "name": "public-domain"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:tzdata:tzdata:2026e-0\\+deb13u1:*:*:*:*:*:*:*",
+      "purl": "pkg:deb/debian/tzdata@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "dpkg-db-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "deb"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "dpkg-db-entry"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:deb/debian/tzdata-legacy@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&package-id=7a3d33d4ed22d589&upstream=tzdata",
+      "type": "library",
+      "publisher": "GNU Libc Maintainers <debian-glibc@lists.debian.org>",
+      "name": "tzdata-legacy",
+      "version": "2026e-0+deb13u1",
+      "licenses": [
+        {
+          "license": {
+            "name": "public-domain"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:tzdata-legacy:tzdata-legacy:2026e-0\\+deb13u1:*:*:*:*:*:*:*",
+      "purl": "pkg:deb/debian/tzdata-legacy@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&upstream=tzdata",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "dpkg-db-cataloger"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "deb"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "dpkg-db-entry"
+        }
+      ]
+    },
+    {
+      "bom-ref": "os:debian@13.7",
+      "type": "operating-system",
+      "name": "debian",
+      "version": "13.7",
+      "description": "Distroless",
+      "swid": {
+        "tagId": "debian",
+        "name": "debian",
+        "version": "13.7"
+      },
+      "externalReferences": [
+        {
+          "url": "https://github.com/GoogleContainerTools/distroless/issues/new",
+          "type": "issue-tracker"
+        },
+        {
+          "url": "https://github.com/GoogleContainerTools/distroless",
+          "type": "website"
+        },
+        {
+          "url": "https://github.com/GoogleContainerTools/distroless/blob/master/README.md",
+          "comment": "support",
+          "type": "other"
+        }
+      ],
+      "properties": [
+        {
+          "name": "syft:distro:extendedSupport",
+          "value": "false"
+        },
+        {
+          "name": "syft:distro:id",
+          "value": "debian"
+        },
+        {
+          "name": "syft:distro:prettyName",
+          "value": "Distroless"
+        }
+      ]
+    },
+    {
+      "bom-ref": "0e9de350c6d6e5ca",
+      "type": "file",
+      "name": "/usr/share/base-files/dot.bashrc",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "ba135c7bf840c9171bd3a3aea4156b45324d8d38"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "3dee894213fc1183318d254b1b3fcb21f41e7fc879ba81d39252f7996b67f980"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:deb/debian/tzdata-legacy@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&package-id=7a3d33d4ed22d589&upstream=tzdata",
+      "dependsOn": [
+        "pkg:deb/debian/tzdata@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&package-id=bdd6b35c9f89cc4b"
+      ]
+    }
+  ]
+}

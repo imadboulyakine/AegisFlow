@@ -1,0 +1,80 @@
+{
+  "@context": "https://openvex.dev/ns/v0.2.0",
+  "@id": "govulncheck/vex:fdc863871ae8dba680c826bc6abb2f70801cd0e6c2ea97d2b7767eff86780542",
+  "author": "Unknown Author",
+  "timestamp": "2026-10-26T18:36:38.352991425Z",
+  "version": 1,
+  "tooling": "https://pkg.go.dev/golang.org/x/vuln/cmd/govulncheck",
+  "statements": [
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2022-1059",
+        "name": "GO-2022-1059",
+        "description": "Denial of service via crafted Accept-Language header in golang.org/x/text/language",
+        "aliases": [
+          "CVE-2022-32149",
+          "GHSA-69ch-w2m2-3vjp"
+        ]
+      },
+      "products": [
+        {
+          "@id": "Unknown Product",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org%2Fx%2Ftext@v0.3.7"
+            }
+          ]
+        }
+      ],
+      "status": "affected"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2023-2102",
+        "name": "GO-2023-2102",
+        "description": "HTTP/2 rapid reset can cause excessive work in net/http",
+        "aliases": [
+          "BIT-golang-2023-39325",
+          "CVE-2023-39325",
+          "GHSA-4374-p667-p6c8"
+        ]
+      },
+      "products": [
+        {
+          "@id": "Unknown Product",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org%2Fx%2Fnet@v0.0.0-20220722155237-a158d28d115b"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_present",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    },
+    {
+      "vulnerability": {
+        "@id": "https://pkg.go.dev/vuln/GO-2026-5029",
+        "name": "GO-2026-5029",
+        "description": "Invoking incorrect handling of character references in DOCTYPE nodes in golang.org/x/net/html",
+        "aliases": [
+          "CVE-2026-25681"
+        ]
+      },
+      "products": [
+        {
+          "@id": "Unknown Product",
+          "subcomponents": [
+            {
+              "@id": "pkg:golang/golang.org%2Fx%2Fnet@v0.0.0-20220722155237-a158d28d115b"
+            }
+          ]
+        }
+      ],
+      "status": "not_affected",
+      "justification": "vulnerable_code_not_in_execute_path",
+      "impact_statement": "Govulncheck determined that the vulnerable code isn't called"
+    }
+  ]
+}

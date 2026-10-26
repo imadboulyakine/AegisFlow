@@ -1,0 +1,202 @@
+{
+  "$schema": "http://cyclonedx.org/schema/bom-1.5.schema.json",
+  "bomFormat": "CycloneDX",
+  "specVersion": "1.5",
+  "serialNumber": "urn:uuid:2c5ad2b8-e460-4cf2-b98e-56edbcdb09a1",
+  "version": 1,
+  "metadata": {
+    "timestamp": "2026-10-26T18:39:00Z",
+    "tools": {
+      "components": [
+        {
+          "type": "application",
+          "author": "anchore",
+          "name": "syft",
+          "version": "1.55.0"
+        }
+      ]
+    },
+    "component": {
+      "bom-ref": "698a643cb8635b78",
+      "type": "file",
+      "name": "example.com/vulnapp"
+    }
+  },
+  "components": [
+    {
+      "bom-ref": "pkg:golang/example.com/vulnapp?package-id=2d0943c025c87ed7",
+      "type": "library",
+      "name": "example.com/vulnapp",
+      "version": "UNKNOWN",
+      "purl": "pkg:golang/example.com/vulnapp",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "go-module-file-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "go"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "go-module"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "go-source-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/go.mod"
+        },
+        {
+          "name": "syft:metadata:architecture",
+          "value": "amd64"
+        },
+        {
+          "name": "syft:metadata:cgoEnabled",
+          "value": "true"
+        },
+        {
+          "name": "syft:metadata:os",
+          "value": "linux"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b?package-id=92452dca26c3c6ff",
+      "type": "library",
+      "name": "golang.org/x/net",
+      "version": "v0.0.0-20220722155237-a158d28d115b",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:golang:networking:v0.0.0-20220722155237-a158d28d115b:*:*:*:*:go:*:*",
+      "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "go-module-file-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "go"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "go-module"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "go-source-entry"
+        },
+        {
+          "name": "syft:cpe23",
+          "value": "cpe:2.3:a:golang:net:v0.0.0-20220722155237-a158d28d115b:*:*:*:*:go:*:*"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/go.mod"
+        },
+        {
+          "name": "syft:metadata:architecture",
+          "value": "amd64"
+        },
+        {
+          "name": "syft:metadata:cgoEnabled",
+          "value": "true"
+        },
+        {
+          "name": "syft:metadata:h1Digest",
+          "value": "h1:PxfKdU9lEEDYjdIzOtC4qFWgkU2rGHdKlKowJSMN9h0="
+        },
+        {
+          "name": "syft:metadata:os",
+          "value": "linux"
+        }
+      ]
+    },
+    {
+      "bom-ref": "pkg:golang/golang.org/x/text@v0.3.7?package-id=a65de2ac909160da",
+      "type": "library",
+      "name": "golang.org/x/text",
+      "version": "v0.3.7",
+      "licenses": [
+        {
+          "license": {
+            "id": "BSD-3-Clause"
+          }
+        }
+      ],
+      "cpe": "cpe:2.3:a:golang:text:v0.3.7:*:*:*:*:*:*:*",
+      "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+      "properties": [
+        {
+          "name": "syft:package:foundBy",
+          "value": "go-module-file-cataloger"
+        },
+        {
+          "name": "syft:package:language",
+          "value": "go"
+        },
+        {
+          "name": "syft:package:type",
+          "value": "go-module"
+        },
+        {
+          "name": "syft:package:metadataType",
+          "value": "go-source-entry"
+        },
+        {
+          "name": "syft:location:0:path",
+          "value": "/go.mod"
+        },
+        {
+          "name": "syft:metadata:architecture",
+          "value": "amd64"
+        },
+        {
+          "name": "syft:metadata:cgoEnabled",
+          "value": "true"
+        },
+        {
+          "name": "syft:metadata:h1Digest",
+          "value": "h1:olpwvP2KacW1ZWvsR7uQhoyTYvKAupfQrRGBFM352Gk="
+        },
+        {
+          "name": "syft:metadata:os",
+          "value": "linux"
+        }
+      ]
+    },
+    {
+      "bom-ref": "3fc5a8d3d86e9790",
+      "type": "file",
+      "name": "/src/vulnapp/go.mod",
+      "hashes": [
+        {
+          "alg": "SHA-1",
+          "content": "bcfaa1c3da6f148f6dfb6cd57062f51113609a44"
+        },
+        {
+          "alg": "SHA-256",
+          "content": "99e42f47263ab51bba4301d12a4241abd5f8f3e407721406238952d615f48864"
+        }
+      ]
+    }
+  ],
+  "dependencies": [
+    {
+      "ref": "pkg:golang/example.com/vulnapp?package-id=2d0943c025c87ed7",
+      "dependsOn": [
+        "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b?package-id=92452dca26c3c6ff",
+        "pkg:golang/golang.org/x/text@v0.3.7?package-id=a65de2ac909160da"
+      ]
+    }
+  ]
+}
