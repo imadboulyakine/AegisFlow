@@ -199,18 +199,7 @@ func (s *Store) ListFindings(ctx context.Context, f FindingFilter) (FindingPage,
 		afterScore, afterID = &score, &id
 	}
 
-	rows, err := s.pool.Query(ctx, `
-SELECT f.id, f.artifact_id, f.kind, f.fingerprint, f.title, f.message, f.severity, f.rule_id, f.tools,
-       f.fixed_versions, f.reachability, f.location_path, f.location_start_line, f.location_end_line,
-       f.status, f.risk_score, f.risk_tier, f.risk_explanation, f.risk_scored_at,
-       f.first_seen_run, f.last_seen_run, f.created_at, f.updated_at,
-       c.purl, c.name, c.version, c.ecosystem, c.licenses, ac.direct,
-       v.vuln_id, v.aliases, v.summary, v.severity, v.cvss, v.cwes, v.published
-FROM findings AS f
-JOIN artifacts AS a ON a.id = f.artifact_id
-LEFT JOIN components AS c ON c.id = f.component_id
-LEFT JOIN artifact_components AS ac ON ac.artifact_id = f.artifact_id AND ac.component_id = f.component_id
-LEFT JOIN vulnerabilities AS v ON v.id = f.vulnerability_id
+	rows, err := s.pool.Query(ctx, selectFindingsSQL+`
 WHERE ($1::bigint IS NULL OR a.project_id = $1)
   AND ($2::bigint IS NULL OR f.artifact_id = $2)
   AND ($3::text IS NULL OR f.risk_tier = $3)
@@ -240,6 +229,21 @@ LIMIT $8`,
 	}
 	return page, nil
 }
+
+// selectFindingsSQL is the SELECT … FROM part shared by ListFindings and GetFindings; its column
+// list must match scanFinding.
+const selectFindingsSQL = `
+SELECT f.id, f.artifact_id, f.kind, f.fingerprint, f.title, f.message, f.severity, f.rule_id, f.tools,
+       f.fixed_versions, f.reachability, f.location_path, f.location_start_line, f.location_end_line,
+       f.status, f.risk_score, f.risk_tier, f.risk_explanation, f.risk_scored_at,
+       f.first_seen_run, f.last_seen_run, f.created_at, f.updated_at,
+       c.purl, c.name, c.version, c.ecosystem, c.licenses, ac.direct,
+       v.vuln_id, v.aliases, v.summary, v.severity, v.cvss, v.cwes, v.published
+FROM findings AS f
+JOIN artifacts AS a ON a.id = f.artifact_id
+LEFT JOIN components AS c ON c.id = f.component_id
+LEFT JOIN artifact_components AS ac ON ac.artifact_id = f.artifact_id AND ac.component_id = f.component_id
+LEFT JOIN vulnerabilities AS v ON v.id = f.vulnerability_id`
 
 // scanFinding maps one ListFindings row.
 func scanFinding(row pgx.CollectableRow) (FindingRecord, error) {
