@@ -1,0 +1,54 @@
+{
+  "formatVersion": 1,
+  "feeds": [
+    {
+      "name": "kev",
+      "source": "https://raw.githubusercontent.com/cisagov/kev-data/main/known_exploited_vulnerabilities.json",
+      "version": "2026.10.23",
+      "date": "2026-10-23T19:30:18.9209Z",
+      "fetchedAt": "2026-10-26T08:00:00Z",
+      "entries": 3
+    },
+    {
+      "name": "epss",
+      "source": "testdata/epss_scores.csv",
+      "version": "v2025.03.14",
+      "date": "2026-10-25T00:00:00Z",
+      "fetchedAt": "2026-10-26T08:00:00Z",
+      "entries": 3
+    }
+  ],
+  "records": [
+    {
+      "cve": "CVE-2016-3081",
+      "kev": true,
+      "kevDateAdded": "2026-10-08",
+      "kevDueDate": "2026-10-11"
+    },
+    {
+      "cve": "CVE-2021-44228",
+      "epss": 0.94401,
+      "percentile": 0.9997,
+      "scoreDate": "2026-10-25",
+      "kev": true,
+      "kevDateAdded": "2021-12-10",
+      "kevDueDate": "2021-12-24",
+      "kevRansomware": true
+    },
+    {
+      "cve": "CVE-2023-44487",
+      "epss": 0.81715,
+      "percentile": 0.9912,
+      "scoreDate": "2026-10-25",
+      "kev": true,
+      "kevDateAdded": "2023-10-10",
+      "kevDueDate": "2023-10-31"
+    },
+    {
+      "cve": "CVE-2024-24790",
+      "epss": 0.00087,
+      "percentile": 0.2537,
+      "scoreDate": "2026-10-25"
+    }
+  ]
+}

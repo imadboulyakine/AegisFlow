@@ -1,0 +1,344 @@
+{
+    "title": "CISA Catalog of Known Exploited Vulnerabilities",
+    "catalogVersion": "2026.10.23",
+    "dateReleased": "2026-10-23T19:30:18.9209Z",
+    "count": 21,
+    "vulnerabilities": [
+        {
+            "cveID": "CVE-2026-114625",
+            "vendorProject": "Arista",
+            "product": "VeloCloud Orchestrator",
+            "vulnerabilityName": "Arista VeloCloud Orchestrator SQL Injection Vulnerability",
+            "dateAdded": "2026-10-23",
+            "shortDescription": "Arista VeloCloud Orchestrator on-prem contains a SQL injection vulnerability that may allow a remote attacker to access privileged internal functionality and impact the VCO host. Successful exploitation may compromise the confidentiality, integrity, and availability of the orchestrator and data managed by the orchestrator.",
+            "requiredAction": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discontinue use of the product if mitigations are unavailable. Stakeholders are responsible for evaluating each asset's internet exposure and ensuring adherence to BOD 26-04 patching guidelines.",
+            "dueDate": "2026-10-26",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "Yes",
+            "notes": "https://www.arista.com/en/support/advisories-notices/security-advisory/24838-security-advisory-0199 ; ; BOD 26-04: https://www.cisa.gov/news-events/directives/bod-26-04-prioritizing-security-updates-based-risk ; Forensics Triage Requirements: https://www.cisa.gov/news-events/directives/bod-26-04-implementation-guidance-prioritizing-security-updates-based-risk ; https://nvd.nist.gov/vuln/detail/CVE-2026-114625",
+            "cwes": [
+                "CWE-89"
+            ]
+        },
+        {
+            "cveID": "CVE-2016-3081",
+            "vendorProject": "Apache",
+            "product": "Struts",
+            "vulnerabilityName": "Apache Struts Command Injection Vulnerability",
+            "dateAdded": "2026-10-08",
+            "shortDescription": "Apache Struts contains a command injection vulnerability that could allow remote attackers to execute arbitrary code via method:prefix when Dynamic Method Invocation is enabled.",
+            "requiredAction": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discontinue use of the product if mitigations are unavailable. Stakeholders are responsible for evaluating each asset's internet exposure and ensuring adherence to BOD 26-04 patching guidelines.",
+            "dueDate": "2026-10-11",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "Yes",
+            "notes": "This vulnerability could affect an open-source component, third-party library, protocol, or proprietary implementation that could be used by different products. For more information, please see: https://cwiki.apache.org/confluence/display/WW/S2-032 ; ; BOD 26-04: https://www.cisa.gov/news-events/directives/bod-26-04-prioritizing-security-updates-based-risk ; Forensics Triage Requirements: https://www.cisa.gov/news-events/directives/bod-26-04-implementation-guidance-prioritizing-security-updates-based-risk ; https://nvd.nist.gov/vuln/detail/CVE-2016-3081",
+            "cwes": [
+                "CWE-77"
+            ]
+        },
+        {
+            "cveID": "CVE-2026-34486",
+            "vendorProject": "Apache",
+            "product": "Tomcat",
+            "vulnerabilityName": "Apache Tomcat Missing Encryption of Sensitive Data Vulnerability",
+            "dateAdded": "2026-08-04",
+            "shortDescription": "Apache Tomcat contains a missing encryption of sensitive data vulnerability that allows the bypass of the EncryptInterceptor. This vulnerability can be chained with CVE‑2025‑24813.",
+            "requiredAction": "Apply mitigations in accordance with vendor instructions, ensuring compliance with CISA’s BOD 26-04 Prioritizing Security Updates Based on Risk (see URL in Notes) guidance and CISA’s “Forensics Triage Requirements” (see URL in Notes). Follow applicable BOD 26-04 guidance for cloud services or discontinue use of the product if mitigations are unavailable. Stakeholders are responsible for evaluating each asset's internet exposure and ensuring adherence to BOD 26-04 patching guidelines.",
+            "dueDate": "2026-08-07",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "https://lists.apache.org/thread/9510k5p5zdvt9pkkgtyp85mvwxo2qrly ; BOD 26-04: https://www.cisa.gov/news-events/directives/bod-26-04-prioritizing-security-updates-based-risk ; Forensics Triage Requirements: https://www.cisa.gov/news-events/directives/bod-26-04-implementation-guidance-prioritizing-security-updates-based-risk ; https://nvd.nist.gov/vuln/detail/CVE-2026-34486",
+            "cwes": [
+                "CWE-311"
+            ]
+        },
+        {
+            "cveID": "CVE-2025-8110",
+            "vendorProject": "Gogs",
+            "product": "Gogs",
+            "vulnerabilityName": "Gogs Path Traversal Vulnerability",
+            "dateAdded": "2026-01-12",
+            "shortDescription": "Gogs contains a path traversal vulnerability affecting improper Symbolic link handling in the PutContents API that could allow for code execution.",
+            "requiredAction": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2026-02-02",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "https://github.com/gogs/gogs/commit/553707f3fd5f68f47f531cfcff56aa3ec294c6f6 ; https://nvd.nist.gov/vuln/detail/CVE-2025-8110",
+            "cwes": [
+                "CWE-22"
+            ]
+        },
+        {
+            "cveID": "CVE-2025-55182",
+            "vendorProject": "Meta",
+            "product": "React Server Components",
+            "vulnerabilityName": "Meta React Server Components Remote Code Execution Vulnerability",
+            "dateAdded": "2025-12-05",
+            "shortDescription": "Meta React Server Components contains a remote code execution vulnerability that could allow unauthenticated remote code execution by exploiting a flaw in how React decodes payloads sent to React Server Function endpoints. Please note CVE-2025-66478 has been rejected, but it is associated with CVE-2025- 55182.",
+            "requiredAction": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2025-12-12",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "Check for signs of potential compromise on all internet accessible REACT instances after applying mitigations. For more information, please see: https://react.dev/blog/2025/12/03/critical-security-vulnerability-in-react-server-components ; https://github.com/vercel-labs/fix-react2shell-next?tab=readme-ov-file ; https://nvd.nist.gov/vuln/detail/CVE-2025-55182",
+            "cwes": []
+        },
+        {
+            "cveID": "CVE-2021-43798",
+            "vendorProject": "Grafana Labs",
+            "product": "Grafana",
+            "vulnerabilityName": "Grafana Path Traversal Vulnerability",
+            "dateAdded": "2025-10-09",
+            "shortDescription": "Grafana contains a path traversal vulnerability that could allow access to local files.",
+            "requiredAction": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2025-10-30",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "https://grafana.com/blog/2021/12/07/grafana-8.3.1-8.2.7-8.1.8-and-8.0.7-released-with-high-severity-security-fix/ ; https://nvd.nist.gov/vuln/detail/CVE-2021-43798",
+            "cwes": [
+                "CWE-22"
+            ]
+        },
+        {
+            "cveID": "CVE-2025-24813",
+            "vendorProject": "Apache",
+            "product": "Tomcat",
+            "vulnerabilityName": "Apache Tomcat Path Equivalence Vulnerability",
+            "dateAdded": "2025-04-01",
+            "shortDescription": "Apache Tomcat contains a path equivalence vulnerability that allows a remote attacker to execute code, disclose information, or inject malicious content via a partial PUT request. This vulnerability can be chained with CVE‑2026‑34486.",
+            "requiredAction": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2025-04-22",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "This vulnerability affects a common open-source component, third-party library, or a protocol used by different products. Please check with specific vendors for information on patching status. For more information, please see: https://lists.apache.org/thread/j5fkjv2k477os90nczf2v9l61fb0kkgq ; https://nvd.nist.gov/vuln/detail/CVE-2025-24813",
+            "cwes": [
+                "CWE-44",
+                "CWE-502"
+            ]
+        },
+        {
+            "cveID": "CVE-2024-3400",
+            "vendorProject": "Palo Alto Networks",
+            "product": "PAN-OS",
+            "vulnerabilityName": "Palo Alto Networks PAN-OS Command Injection Vulnerability",
+            "dateAdded": "2024-04-12",
+            "shortDescription": "Palo Alto Networks PAN-OS GlobalProtect feature contains a command injection vulnerability that allows an unauthenticated attacker to execute commands with root privileges on the firewall.",
+            "requiredAction": "Apply mitigations per vendor instructions as they become available. Otherwise, users with vulnerable versions of affected devices should enable Threat Prevention IDs available from the vendor. See the vendor bulletin for more details and a patch release schedule.",
+            "dueDate": "2024-04-19",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://security.paloaltonetworks.com/CVE-2024-3400 ;   https://nvd.nist.gov/vuln/detail/CVE-2024-3400",
+            "cwes": [
+                "CWE-20",
+                "CWE-77"
+            ]
+        },
+        {
+            "cveID": "CVE-2023-46604",
+            "vendorProject": "Apache",
+            "product": "ActiveMQ",
+            "vulnerabilityName": "Apache ActiveMQ Deserialization of Untrusted Data Vulnerability",
+            "dateAdded": "2023-11-02",
+            "shortDescription": "Apache ActiveMQ contains a deserialization of untrusted data vulnerability that may allow a remote attacker with network access to a broker to run shell commands by manipulating serialized class types in the OpenWire protocol to cause the broker to instantiate any class on the classpath.",
+            "requiredAction": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2023-11-23",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://activemq.apache.org/security-advisories.data/CVE-2023-46604-announcement.txt; https://nvd.nist.gov/vuln/detail/CVE-2023-46604",
+            "cwes": [
+                "CWE-502"
+            ]
+        },
+        {
+            "cveID": "CVE-2023-4966",
+            "vendorProject": "Citrix",
+            "product": "NetScaler ADC and NetScaler Gateway",
+            "vulnerabilityName": "Citrix NetScaler ADC and NetScaler Gateway Buffer Overflow Vulnerability",
+            "dateAdded": "2023-10-18",
+            "shortDescription": "Citrix NetScaler ADC and NetScaler Gateway contain a buffer overflow vulnerability that allows for sensitive information disclosure when configured as a Gateway (VPN virtual server, ICA Proxy, CVPN, RDP Proxy) or AAA virtual server.",
+            "requiredAction": "Apply mitigations and kill all active and persistent sessions per vendor instructions [https://www.netscaler.com/blog/news/cve-2023-4966-critical-security-update-now-available-for-netscaler-adc-and-netscaler-gateway/] OR discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2023-11-08",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://www.netscaler.com/blog/news/cve-2023-4966-critical-security-update-now-available-for-netscaler-adc-and-netscaler-gateway/, https://support.citrix.com/article/CTX579459/netscaler-adc-and-netscaler-gateway-security-bulletin-for-cve20234966-and-cve20234967 ;  https://nvd.nist.gov/vuln/detail/CVE-2023-4966",
+            "cwes": [
+                "CWE-119"
+            ]
+        },
+        {
+            "cveID": "CVE-2023-44487",
+            "vendorProject": "IETF",
+            "product": "HTTP/2",
+            "vulnerabilityName": "HTTP/2 Rapid Reset Attack Vulnerability",
+            "dateAdded": "2023-10-10",
+            "shortDescription": "HTTP/2 contains a rapid reset vulnerability that allows for a distributed denial-of-service attack (DDoS).",
+            "requiredAction": "Apply mitigations per vendor instructions, follow applicable BOD 22-01 guidance for cloud services, or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2023-10-31",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "This vulnerability affects a common open-source component, third-party library, or protocol used by different products. For more information, please see: HTTP/2 Rapid Reset Vulnerability, CVE-2023-44487 | CISA: https://www.cisa.gov/news-events/alerts/2023/10/10/http2-rapid-reset-vulnerability-cve-2023-44487; https://blog.cloudflare.com/technical-breakdown-http2-rapid-reset-ddos-attack/;  https://nvd.nist.gov/vuln/detail/CVE-2023-44487",
+            "cwes": [
+                "CWE-400"
+            ]
+        },
+        {
+            "cveID": "CVE-2023-22515",
+            "vendorProject": "Atlassian",
+            "product": "Confluence Data Center and Server",
+            "vulnerabilityName": "Atlassian Confluence Data Center and Server Broken Access Control Vulnerability",
+            "dateAdded": "2023-10-05",
+            "shortDescription": "Atlassian Confluence Data Center and Server contains a broken access control vulnerability that allows an attacker to create unauthorized Confluence administrator accounts and access Confluence.",
+            "requiredAction": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable. Check all affected Confluence instances for evidence of compromise per vendor instructions and report any positive findings to CISA.",
+            "dueDate": "2023-10-13",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://confluence.atlassian.com/security/cve-2023-22515-privilege-escalation-vulnerability-in-confluence-data-center-and-server-1295682276.html;  https://nvd.nist.gov/vuln/detail/CVE-2023-22515",
+            "cwes": []
+        },
+        {
+            "cveID": "CVE-2023-4863",
+            "vendorProject": "Google",
+            "product": "Chromium WebP",
+            "vulnerabilityName": "Google Chromium WebP Heap-Based Buffer Overflow Vulnerability",
+            "dateAdded": "2023-09-13",
+            "shortDescription": "Google Chromium WebP contains a heap-based buffer overflow vulnerability that allows a remote attacker to perform an out-of-bounds memory write via a crafted HTML page. This vulnerability can affect applications that use the WebP Codec.",
+            "requiredAction": "Apply mitigations per vendor instructions or discontinue use of the product if mitigations are unavailable.",
+            "dueDate": "2023-10-04",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "https://chromereleases.googleblog.com/2023/09/stable-channel-update-for-desktop_11.html?m=1; https://nvd.nist.gov/vuln/detail/CVE-2023-4863",
+            "cwes": [
+                "CWE-787"
+            ]
+        },
+        {
+            "cveID": "CVE-2023-34362",
+            "vendorProject": "Progress",
+            "product": "MOVEit Transfer",
+            "vulnerabilityName": "Progress MOVEit Transfer SQL Injection Vulnerability",
+            "dateAdded": "2023-06-02",
+            "shortDescription": "Progress MOVEit Transfer contains a SQL injection vulnerability that could allow an unauthenticated attacker to gain unauthorized access to MOVEit Transfer's database. Depending on the database engine being used (MySQL, Microsoft SQL Server, or Azure SQL), an attacker may be able to infer information about the structure and contents of the database in addition to executing SQL statements that alter or delete database elements.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2023-06-23",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "This CVE has a CISA AA located here: https://www.cisa.gov/news-events/cybersecurity-advisories/aa23-158a. Please see the AA for associated IOCs. Additional information is available at: https://community.progress.com/s/article/MOVEit-Transfer-Critical-Vulnerability-31May2023.;  https://nvd.nist.gov/vuln/detail/CVE-2023-34362",
+            "cwes": [
+                "CWE-89"
+            ]
+        },
+        {
+            "cveID": "CVE-2021-45046",
+            "vendorProject": "Apache",
+            "product": "Log4j2",
+            "vulnerabilityName": "Apache Log4j2 Deserialization of Untrusted Data Vulnerability",
+            "dateAdded": "2023-05-01",
+            "shortDescription": "Apache Log4j2 contains a deserialization of untrusted data vulnerability due to the incomplete fix of CVE-2021-44228, where the Thread Context Lookup Pattern is vulnerable to remote code execution in certain non-default configurations.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2023-05-22",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://logging.apache.org/log4j/2.x/security.html; https://nvd.nist.gov/vuln/detail/CVE-2021-45046",
+            "cwes": [
+                "CWE-917"
+            ]
+        },
+        {
+            "cveID": "CVE-2022-41040",
+            "vendorProject": "Microsoft",
+            "product": "Exchange Server",
+            "vulnerabilityName": "Microsoft Exchange Server Server-Side Request Forgery Vulnerability",
+            "dateAdded": "2022-09-30",
+            "shortDescription": "Microsoft Exchange Server allows for server-side request forgery. Dubbed \"ProxyNotShell,\" this vulnerability is chainable with CVE-2022-41082 which allows for remote code execution.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2022-10-21",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://msrc-blog.microsoft.com/2022/09/29/customer-guidance-for-reported-zero-day-vulnerabilities-in-microsoft-exchange-server/;  https://nvd.nist.gov/vuln/detail/CVE-2022-41040",
+            "cwes": [
+                "CWE-918"
+            ]
+        },
+        {
+            "cveID": "CVE-2014-0160",
+            "vendorProject": "OpenSSL",
+            "product": "OpenSSL",
+            "vulnerabilityName": "OpenSSL Information Disclosure Vulnerability",
+            "dateAdded": "2022-05-04",
+            "shortDescription": "The TLS and DTLS implementations in OpenSSL do not properly handle Heartbeat Extension packets, which allows remote attackers to obtain sensitive information.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2022-05-25",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "https://nvd.nist.gov/vuln/detail/CVE-2014-0160",
+            "cwes": [
+                "CWE-125"
+            ]
+        },
+        {
+            "cveID": "CVE-2022-22965",
+            "vendorProject": "VMware",
+            "product": "Spring Framework",
+            "vulnerabilityName": "Spring Framework JDK 9+ Remote Code Execution Vulnerability",
+            "dateAdded": "2022-04-04",
+            "shortDescription": "Spring MVC or Spring WebFlux application running on JDK 9+ may be vulnerable to remote code execution (RCE) via data binding.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2022-04-25",
+            "knownRansomwareCampaignUse": "Unknown",
+            "forensicTriage": "No",
+            "notes": "https://nvd.nist.gov/vuln/detail/CVE-2022-22965",
+            "cwes": [
+                "CWE-94"
+            ]
+        },
+        {
+            "cveID": "CVE-2021-44228",
+            "vendorProject": "Apache",
+            "product": "Log4j2",
+            "vulnerabilityName": "Apache Log4j2 Remote Code Execution Vulnerability",
+            "dateAdded": "2021-12-10",
+            "shortDescription": "Apache Log4j2 contains a vulnerability where JNDI features do not protect against attacker-controlled JNDI-related endpoints, allowing for remote code execution.",
+            "requiredAction": "For all affected software assets for which updates exist, the only acceptable remediation actions are: 1) Apply updates; OR 2) remove affected assets from agency networks. Temporary mitigations using one of the measures provided at https://www.cisa.gov/uscert/ed-22-02-apache-log4j-recommended-mitigation-measures are only acceptable until updates are available.",
+            "dueDate": "2021-12-24",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://nvd.nist.gov/vuln/detail/CVE-2021-44228",
+            "cwes": [
+                "CWE-20",
+                "CWE-400",
+                "CWE-502"
+            ]
+        },
+        {
+            "cveID": "CVE-2017-5638",
+            "vendorProject": "Apache",
+            "product": "Struts",
+            "vulnerabilityName": "Apache Struts Remote Code Execution Vulnerability",
+            "dateAdded": "2021-11-03",
+            "shortDescription": "Apache Struts Jakarta Multipart parser allows for malicious file upload using the Content-Type value, leading to remote code execution.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2022-05-03",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "https://nvd.nist.gov/vuln/detail/CVE-2017-5638",
+            "cwes": [
+                "CWE-20"
+            ]
+        },
+        {
+            "cveID": "CVE-2019-11510",
+            "vendorProject": "Ivanti",
+            "product": "Pulse Connect Secure",
+            "vulnerabilityName": "Ivanti Pulse Connect Secure Arbitrary File Read Vulnerability",
+            "dateAdded": "2021-11-03",
+            "shortDescription": "Ivanti Pulse Connect Secure contains an arbitrary file read vulnerability that allows an unauthenticated remote attacker with network access via HTTPS to send a specially crafted URI.",
+            "requiredAction": "Apply updates per vendor instructions.",
+            "dueDate": "2022-05-03",
+            "knownRansomwareCampaignUse": "Known",
+            "forensicTriage": "No",
+            "notes": "Reference CISA's ED 21-03 (https://www.cisa.gov/news-events/directives/ed-21-03-mitigate-pulse-connect-secure-product-vulnerabilities) for further guidance and requirements. Note: The due date for addressing this vulnerability aligns with the requirements outlined in ED 21-03. https://nvd.nist.gov/vuln/detail/CVE-2019-11510",
+            "cwes": [
+                "CWE-22"
+            ]
+        }
+    ]
+}
