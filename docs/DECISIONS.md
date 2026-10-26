@@ -32,7 +32,7 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 | 020 | Stdlib JWS/JWKS verification for GitHub Actions OIDC (no JWT library) | Accepted |
 | 021 | PostgreSQL store with pgx v5, embedded migrations, append-only triggers | Accepted |
 | 022 | Evidence normalization rules (reachability, PURLs, VEX scope, limits) | Accepted |
-| 023 | Risk engine edge cases: VEX vs KEV override, unknown exposure, fail-closed feeds | Proposed (owner sign-off) |
+| 023 | Risk engine edge cases: VEX vs KEV override, unknown exposure, fail-closed feeds | Accepted |
 
 ---
 
@@ -349,7 +349,7 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 - **Status**: Accepted — **Date**: 2026-10-26
 
 ### ADR-023 — Risk engine edge cases
-- **Decision (implemented, awaiting owner sign-off)**: a valid VEX `not_affected`/`fixed` statement sets the
+- **Decision (owner chose "trust the VEX", 2026-10-26)**: a valid VEX `not_affected`/`fixed` statement sets the
   score to 0 (P3) **even when the KEV + called + internet override would apply**; if it contradicts
   `called` reachability it is flagged `vex-conflict` for review. `not_affected` counts only with a
   justification or impact statement and must name the vulnerability ID or an alias. Unknown exposure
@@ -358,7 +358,7 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   previous snapshot kept.
 - **Consequences**: ADR-012's "always P1" rule is read as "unless a justified VEX says not affected".
   Alternative if the owner prefers: keep P1 and only annotate the VEX (one-line change in the engine).
-- **Status**: Proposed (owner sign-off) — **Date**: 2026-10-26
+- **Status**: Accepted — **Date**: 2026-10-26
 
 ---
 
