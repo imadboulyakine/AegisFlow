@@ -40,3 +40,6 @@ Thumbs.db
 # --- Agent tooling ---
 # Isolated git worktrees created by coding-agent sessions.
 /.claude/worktrees/
+
+# Experiment outputs (raw results are regenerated from seeds; curated tables go into docs).
+/experiments/results/
