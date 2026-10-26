@@ -7,8 +7,10 @@ before deployment, risk-aware vulnerability correlation, explainable anomaly det
 progressive delivery on Azure. The service is a single Go binary (standard library only) that
 serves a JSON API and an embedded React dashboard bundled with Bun.
 
-**Status: Phase 0 — bootstrap.** The repository currently contains the hardened application
-skeleton, the CI pipeline and the container build. Security features arrive in later phases; see
+**Status: Phase 1 — secure CI foundation.** The hardened application skeleton is in place and
+CI now scans every change (secrets, SAST, workflow security, Go and npm vulnerabilities, SBOMs,
+image scan) and signs `main` builds with SLSA provenance. The platform features (evidence
+ingestion, risk scoring, policy gate) arrive in Phase 2–3; see
 [docs/ROADMAP.md](docs/ROADMAP.md) and [docs/PROJECT_STATE.md](docs/PROJECT_STATE.md).
 
 ## Quickstart
@@ -101,4 +103,6 @@ compose.yaml          local stack (app plus optional PostgreSQL profile)
 - [Security model](docs/SECURITY_MODEL.md)
 - [Azure cost plan](docs/AZURE_COSTS.md)
 - [Session handoff](docs/SESSION_HANDOFF.md)
+- [Verifying a build (signatures, provenance, reproducible build)](docs/VERIFY.md)
+- [Security policy](SECURITY.md) · [Licence: Apache-2.0](LICENSE)
 - Contributor and agent guidelines: [CLAUDE.md](CLAUDE.md), [AGENTS.md](AGENTS.md)

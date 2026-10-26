@@ -28,6 +28,7 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 | 016 | Authentication: GitHub OIDC for CI ingestion, Entra ID for the dashboard | Proposed |
 | 017 | Agent sessions may use the owner's Azure service principal (accepted risk) | Accepted |
 | 018 | Phase 4 hosting: Azure for Students subscription, $50/month budget, UAMI + OIDC | Accepted |
+| 019 | Phase 1 CI security gates and binary provenance design | Accepted |
 
 ---
 
@@ -99,6 +100,10 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   sum.golang.org) instead of a third-party action, so local and CI use the same command; Dependabot
   also covers `docker-compose` and uses a 3-day `cooldown`; Bun installs use `--frozen-lockfile
   --ignore-scripts` with a 3-day `minimumReleaseAge`.
+- **Amended in Phase 1a**: Dependabot `cooldown` raised to **7 days** (zizmor's default; Dependabot
+  security updates are not delayed by cooldown) and a `pip` ecosystem added for the hash-pinned CI tool
+  requirements; Bun's install-time `minimumReleaseAge` stays 3 days (raising it could break frozen
+  installs of current pins). actionlint and zizmor now run in CI (`code-security.yml`).
 - **Consequences**: Updates arrive as reviewable Dependabot PRs; job-level permission escalation must
   be explicit. Follow-ups in Phase 1: zizmor + actionlint in CI (`make actionlint` exists locally),
   evaluate GitHub workflow dependency lockfiles (public preview).
@@ -264,6 +269,36 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   reach the Students subscription — Phase 4 needs new owner-side setup (subscription, RG, role
   assignment for the UAMI). Students subscriptions may restrict regions/SKUs: verify before writing
   Bicep defaults. $50 leaves room for demo weeks; idle target stays ≈ $6–11/month.
+- **Status**: Accepted — **Date**: 2026-10-26
+
+### ADR-019 — Phase 1 CI security gates and binary provenance design
+- **Context**: Phase 1 makes AegisFlow's own pipeline produce the evidence the platform will ingest;
+  gates must be strict enough to matter and quiet enough to stay green on a clean tree.
+- **Decision**: Four workflows besides `ci.yml`:
+  - `code-security.yml` — gitleaks v8.30.1 (`go run`, sum.golang.org-verified): PR range on PRs, full
+    history otherwise, **any finding fails**, inline `gitleaks:allow` ignored, allow-list only for
+    verified synthetic fixtures. Semgrep 1.182.0 (digest-pinned image): 10 repo rules with tests +
+    registry packs in CI, **ERROR fails**, warnings summarised. zizmor 1.31.1 (PyPI, `--require-hashes`):
+    **medium+ severity and confidence fails**. actionlint.
+  - `supply-chain.yml` — govulncheck **fails on called vulnerable symbols**; osv-scanner v2.7.0 over
+    `go.mod` (incl. Go stdlib version) and `web/bun.lock` **fails on any known vulnerability** unless
+    excepted with reason + expiry (expect red when a Go point release fixes a stdlib CVE, until the
+    toolchain is bumped); Syft v1.55.0 + Grype v0.121.0 (digest-pinned images, read-only, no caps):
+    **high+ with a fix available fails**; JSON/OpenVEX/SBOM/SARIF artifacts with stable names for
+    Phase 2 ingestion.
+  - `github-security.yml` — CodeQL (`security-extended`; Go, JS/TS, Actions) and dependency review
+    (high+), public-only.
+  - `provenance.yml` — build job (no id-token, caches off) → sign job (main only, public only, runs no
+    repo code, re-checks the sha256): `actions/attest` SLSA provenance + SBOM attestation and cosign
+    keyless `sign-blob`; verify job with negative controls. Reproducible build (`make reproduce`).
+  - SARIF uploads and every write-scoped token (`security-events`, `id-token`, `attestations`) live in
+    separate, minimal jobs gated on `github.event.repository.visibility == 'public'`.
+- **Consequences**: Honest claim **SLSA Build L2** (L3 needs a reusable build workflow — stretch).
+  Scheduled runs may lack `github.event.repository`, so weekly SARIF/CodeQL uploads can be skipped
+  (pushes and PRs still upload) — accepted. Tool versions/digests in `mk/*.mk` (Semgrep image, gitleaks,
+  osv-scanner, Syft, Grype, cosign) are **not** bumped by Dependabot: manual, reviewed bumps. Estimated
+  private-repo cost ≈ 10–15 billed minutes per PR run across workflows; free once public. Third-party
+  verification steps: `docs/VERIFY.md`.
 - **Status**: Accepted — **Date**: 2026-10-26
 
 ---
