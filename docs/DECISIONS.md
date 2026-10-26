@@ -25,10 +25,14 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 | 013 | Azure region: francecentral | Accepted |
 | 014 | Repository visibility: public now; Apache-2.0 | Accepted |
 | 015 | Scanner and signing tool pinning after 2025–2026 action compromises | Accepted |
-| 016 | Authentication: GitHub OIDC for CI ingestion, Entra ID for the dashboard | Proposed |
+| 016 | Authentication: GitHub OIDC for CI ingestion, Entra ID for the dashboard | Accepted (CI part); dashboard part Proposed |
 | 017 | Agent sessions may use the owner's Azure service principal (accepted risk) | Accepted |
 | 018 | Phase 4 hosting: Azure for Students subscription, $50/month budget, UAMI + OIDC | Accepted |
 | 019 | Phase 1 CI security gates and binary provenance design | Accepted |
+| 020 | Stdlib JWS/JWKS verification for GitHub Actions OIDC (no JWT library) | Accepted |
+| 021 | PostgreSQL store with pgx v5, embedded migrations, append-only triggers | Accepted |
+| 022 | Evidence normalization rules (reachability, PURLs, VEX scope, limits) | Accepted |
+| 023 | Risk engine edge cases: VEX vs KEV override, unknown exposure, fail-closed feeds | Proposed (owner sign-off) |
 
 ---
 
@@ -300,6 +304,61 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   private-repo cost ≈ 10–15 billed minutes per PR run across workflows; free once public. Third-party
   verification steps: `docs/VERIFY.md`.
 - **Status**: Accepted — **Date**: 2026-10-26
+
+### ADR-020 — Stdlib JWS/JWKS verification for GitHub Actions OIDC
+- **Context**: ADR-016 left "JWT library vs stdlib" open. The ingestion API must verify GitHub Actions
+  OIDC tokens; JWT libraries have a history of alg-confusion bugs and add dependencies.
+- **Decision**: `internal/auth/ghoidc`, standard library only: RS256 allow-list (none/HS*/ES* rejected
+  with typed errors), `kid` required, RSA ≥ 2048, JWKS cache with TTL, rate-limited refresh on unknown
+  `kid`, last-good key set on fetch failure, no redirects; claims checked: `iss`, `aud` (GitHub's
+  default and Azure's `api://AzureADTokenExchange` audiences refused), `exp/nbf/iat` with skew,
+  `repository_id` + `repository_owner_id` allow-lists as `int64` (never names), optional ref/environment
+  allow-lists; `Claims.CheckCommit` binds evidence to the token's `sha`; `sub` parsed for audit only
+  (handles the immutable ID-based format). Middleware: 401 + `WWW-Authenticate`, 403, 503 + `Retry-After`.
+- **Consequences**: ~530 lines of security-critical code (≈1,500 with config/middleware), 97.8 %
+  coverage, 4 fuzz targets. No replay cache (tokens live minutes; ingestion is idempotent). Not yet
+  exercised against a real GitHub token (blocked in the sandbox) — first real use is the CI upload job.
+- **Status**: Accepted — **Date**: 2026-10-26
+
+### ADR-021 — PostgreSQL store with pgx v5
+- **Context**: ADR-007 chose PostgreSQL; a driver is unavoidable.
+- **Decision**: `github.com/jackc/pgx/v5` v5.11.0 (MIT; 6 modules linked into the binary, others
+  test-only, MIT/BSD-3). Embedded SQL migrations with an in-house migrator (advisory lock, one
+  transaction per migration, checksums verified, refuses a DB newer than the binary). `evidence` and
+  `audit_log` are append-only via triggers (SQLSTATE AF001 → `ErrImmutable`). `IngestDocument` runs in
+  one transaction, serialized per project, retried on deadlock; fixed-marking is scoped per tool; VEX
+  scoped per project. **Deviation from ARCHITECTURE.md §4**: artifact digests are unique **per project**,
+  not globally, so one project can never attach evidence to another's artifact.
+- **Consequences**: Triggers do not stop a table owner/superuser: Phase 4 must run the app with a
+  dedicated role holding only SELECT/INSERT on append-only tables (SECURITY_MODEL.md). CI runs the
+  integration tests against a digest-pinned `postgres:18.4-alpine` service (CI-only placeholder password).
+- **Status**: Accepted — **Date**: 2026-10-26
+
+### ADR-022 — Evidence normalization rules
+- **Decision**: `internal/evidence/normalize` parses CycloneDX 1.4–1.7, SPDX 2.2/2.3, SARIF 2.1.0, Grype,
+  govulncheck JSON and OpenVEX 0.2.0 (stdlib, pre-decode JSON guard: depth, duplicate/case-colliding
+  keys, trailing data; 64 MiB / 100k items / depth 64 limits; output capped). **Reachability**: in a
+  symbol-level govulncheck scan, package- and module-level findings are `imported` (0.3); `unknown`
+  (0.7) only when the scan itself ran at package/module level — so a merely-required module never
+  outranks an imported-but-uncalled package. PURLs are stored as tools wrote them and compared with
+  `CanonicalPURL`. Artifact digests come from CI metadata (Syft's image SBOM has none). OpenVEX
+  subcomponents are flattened into products; VEX must be scoped to the artifact it was ingested for.
+- **Consequences**: govulncheck findings have no CVSS; severity arrives by merging with Grype through the
+  shared fingerprint. Suggested model additions (VEX aliases/subcomponents, Finding.CWEs,
+  Document.Warnings) deferred.
+- **Status**: Accepted — **Date**: 2026-10-26
+
+### ADR-023 — Risk engine edge cases
+- **Decision (implemented, awaiting owner sign-off)**: a valid VEX `not_affected`/`fixed` statement sets the
+  score to 0 (P3) **even when the KEV + called + internet override would apply**; if it contradicts
+  `called` reachability it is flagged `vex-conflict` for review. `not_affected` counts only with a
+  justification or impact statement and must name the vulnerability ID or an alias. Unknown exposure
+  scores as internet (1.0) but never triggers the override. Tier is computed on the score rounded to 2
+  decimals. Feeds fail closed: an empty/inconsistent KEV catalogue or EPSS CSV is rejected and the
+  previous snapshot kept.
+- **Consequences**: ADR-012's "always P1" rule is read as "unless a justified VEX says not affected".
+  Alternative if the owner prefers: keep P1 and only annotate the VEX (one-line change in the engine).
+- **Status**: Proposed (owner sign-off) — **Date**: 2026-10-26
 
 ---
 

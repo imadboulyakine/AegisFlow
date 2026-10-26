@@ -27,6 +27,23 @@ jobs:
     name: Go · fmt, vet, lint, test, vuln, build
     runs-on: ubuntu-24.04
     timeout-minutes: 15
+    # Throwaway PostgreSQL for the store/ingest integration tests (they skip when the URL is unset).
+    # The service is only reachable from this job; the credential is a CI-only placeholder that
+    # protects nothing (ADR-021).
+    services:
+      postgres:
+        image: postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+        env:
+          POSTGRES_USER: aegisflow
+          POSTGRES_PASSWORD: aegisflow-ci-only
+          POSTGRES_DB: aegisflow
+        ports:
+          - 127.0.0.1:5432:5432
+        options: >-
+          --health-cmd "pg_isready -U aegisflow -d aegisflow"
+          --health-interval 5s --health-timeout 5s --health-retries 10
+    env:
+      AEGISFLOW_TEST_DATABASE_URL: postgres://aegisflow:aegisflow-ci-only@127.0.0.1:5432/aegisflow?sslmode=disable
     steps:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -37,7 +54,7 @@ jobs:
         uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
         with:
           go-version-file: go.mod
-          cache-dependency-path: go.mod # no go.sum yet: zero third-party Go dependencies
+          cache-dependency-path: go.sum
 
       - name: go.mod is tidy
         run: go mod tidy -diff
