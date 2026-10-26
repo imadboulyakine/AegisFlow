@@ -10,6 +10,7 @@ import (
 	"log/slog"
 	"net"
 	"net/netip"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -20,6 +21,7 @@ const (
 	EnvAddr            = "AEGISFLOW_ADDR"
 	EnvLogLevel        = "AEGISFLOW_LOG_LEVEL"
 	EnvShutdownTimeout = "AEGISFLOW_SHUTDOWN_TIMEOUT"
+	EnvDatabaseURL     = "AEGISFLOW_DATABASE_URL"
 )
 
 // Defaults applied when a variable is unset or empty.
@@ -39,6 +41,10 @@ type Config struct {
 	LogLevel slog.Level
 	// ShutdownTimeout bounds graceful shutdown after SIGINT/SIGTERM.
 	ShutdownTimeout time.Duration
+	// DatabaseURL is the PostgreSQL connection URL (postgres:// or postgresql://). Empty means
+	// no database: persistence-backed features are disabled. It may embed credentials, so never
+	// log it; use RedactedDatabaseURL.
+	DatabaseURL string
 }
 
 // Load reads and validates configuration. getenv is usually os.Getenv; tests inject a map.
@@ -74,10 +80,64 @@ func Load(getenv func(string) string) (Config, error) {
 		}
 	}
 
+	if v := strings.TrimSpace(getenv(EnvDatabaseURL)); v != "" {
+		if err := validateDatabaseURL(v); err != nil {
+			errs = append(errs, fmt.Errorf("%s: %w", EnvDatabaseURL, err))
+		} else {
+			cfg.DatabaseURL = v
+		}
+	}
+
 	if len(errs) > 0 {
 		return Config{}, errors.Join(errs...)
 	}
 	return cfg, nil
+}
+
+// validSSLModes are libpq's sslmode values.
+var validSSLModes = map[string]bool{
+	"disable": true, "allow": true, "prefer": true, "require": true, "verify-ca": true, "verify-full": true,
+}
+
+// validateDatabaseURL checks the shape of a PostgreSQL URL. Error messages never quote the value:
+// it may contain a password.
+func validateDatabaseURL(raw string) error {
+	if strings.ContainsFunc(raw, func(r rune) bool { return r <= ' ' || r == 0x7f }) {
+		return errors.New("must not contain spaces or control characters")
+	}
+	u, err := url.Parse(raw)
+	if err != nil { // url.Error quotes the input: do not wrap it
+		return errors.New("not a valid URL (want postgres://user@host:port/dbname?sslmode=...)")
+	}
+	if u.Scheme != "postgres" && u.Scheme != "postgresql" {
+		return errors.New("scheme must be postgres:// or postgresql://")
+	}
+	q := u.Query()
+	if u.Host == "" && q.Get("host") == "" {
+		return errors.New("missing host")
+	}
+	if port := u.Port(); port != "" {
+		if n, err := strconv.Atoi(port); err != nil || n < 1 || n > 65535 {
+			return errors.New("invalid port")
+		}
+	}
+	if mode := q.Get("sslmode"); mode != "" && !validSSLModes[mode] {
+		return errors.New("invalid sslmode (want disable, allow, prefer, require, verify-ca or verify-full)")
+	}
+	return nil
+}
+
+// RedactedDatabaseURL returns DatabaseURL with any password replaced by "xxxxx", safe to log;
+// "" when no database is configured.
+func (c Config) RedactedDatabaseURL() string {
+	if c.DatabaseURL == "" {
+		return ""
+	}
+	u, err := url.Parse(c.DatabaseURL)
+	if err != nil {
+		return "(unparseable)"
+	}
+	return u.Redacted()
 }
 
 func validateAddr(addr string) error {
