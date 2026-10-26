@@ -1,6 +1,8 @@
 package config
 
 import (
+	"crypto/rand"
+	"encoding/hex"
 	"log/slog"
 	"strings"
 	"testing"
@@ -9,6 +11,109 @@ import (
 
 func env(m map[string]string) func(string) string {
 	return func(k string) string { return m[k] }
+}
+
+// randomSecret returns a throwaway credential generated at test time (no secret-looking literals
+// in the repository).
+func randomSecret(t *testing.T) string {
+	t.Helper()
+	b := make([]byte, 12)
+	if _, err := rand.Read(b); err != nil {
+		t.Fatal(err)
+	}
+	return hex.EncodeToString(b)
+}
+
+func TestLoadDatabaseURL(t *testing.T) {
+	t.Parallel()
+
+	tests := []struct {
+		name    string
+		value   string
+		want    string // expected Config.DatabaseURL ("" = disabled)
+		wantErr string // substring of the error ("" = no error)
+	}{
+		{name: "unset means no database", value: "", want: ""},
+		{name: "blank means no database", value: "   ", want: ""},
+		{
+			name:  "postgres scheme",
+			value: "postgres://aegisflow@127.0.0.1:5432/aegisflow?sslmode=disable",
+			want:  "postgres://aegisflow@127.0.0.1:5432/aegisflow?sslmode=disable",
+		},
+		{
+			name:  "postgresql scheme, trimmed",
+			value: " postgresql://db.internal/aegisflow?sslmode=verify-full ",
+			want:  "postgresql://db.internal/aegisflow?sslmode=verify-full",
+		},
+		{
+			name:  "unix socket via host parameter",
+			value: "postgres:///aegisflow?host=/var/run/postgresql",
+			want:  "postgres:///aegisflow?host=/var/run/postgresql",
+		},
+		{name: "keyword/value DSN rejected", value: "host=localhost dbname=x", wantErr: "spaces or control"},
+		{name: "wrong scheme", value: "mysql://localhost/x", wantErr: "scheme must be"},
+		{name: "no scheme", value: "localhost:5432/x", wantErr: "scheme must be"},
+		{name: "missing host", value: "postgres:///aegisflow", wantErr: "missing host"},
+		{name: "bad port", value: "postgres://localhost:99999/x", wantErr: "invalid port"},
+		{name: "bad sslmode", value: "postgres://localhost/x?sslmode=sometimes", wantErr: "invalid sslmode"},
+		{name: "control character", value: "postgres://localhost/x\x7f", wantErr: "control"},
+		{name: "unparseable", value: "postgres://[::1/x", wantErr: "not a valid URL"},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			t.Parallel()
+			got, err := Load(env(map[string]string{EnvDatabaseURL: tt.value}))
+			if tt.wantErr != "" {
+				if err == nil || !strings.Contains(err.Error(), tt.wantErr) || !strings.Contains(err.Error(), EnvDatabaseURL) {
+					t.Fatalf("Load() error = %v, want it to mention %q and %s", err, tt.wantErr, EnvDatabaseURL)
+				}
+				return
+			}
+			if err != nil {
+				t.Fatalf("Load() unexpected error: %v", err)
+			}
+			if got.DatabaseURL != tt.want {
+				t.Errorf("DatabaseURL = %q, want %q", got.DatabaseURL, tt.want)
+			}
+		})
+	}
+}
+
+func TestDatabaseURLNeverLeaksPassword(t *testing.T) {
+	t.Parallel()
+	pw := randomSecret(t)
+
+	// Invalid URLs: the error must not echo the value (url.Error would).
+	for _, raw := range []string{
+		"postgres://u:" + pw + "@[::1/x",
+		"postgres://u:" + pw + "@localhost:0/x",
+		"postgres://u:" + pw + "@localhost/x?sslmode=" + pw,
+		"mysql://u:" + pw + "@localhost/x",
+	} {
+		_, err := Load(env(map[string]string{EnvDatabaseURL: raw}))
+		if err == nil {
+			t.Fatalf("Load() accepted an invalid URL")
+		}
+		if strings.Contains(err.Error(), pw) {
+			t.Errorf("error leaks the password: %v", err)
+		}
+	}
+
+	// Valid URL: RedactedDatabaseURL masks the password and keeps the rest.
+	cfg, err := Load(env(map[string]string{EnvDatabaseURL: "postgres://aegisflow:" + pw + "@127.0.0.1:5432/aegisflow"}))
+	if err != nil {
+		t.Fatalf("Load() unexpected error: %v", err)
+	}
+	red := cfg.RedactedDatabaseURL()
+	if strings.Contains(red, pw) || !strings.Contains(red, "127.0.0.1:5432/aegisflow") || !strings.Contains(red, "xxxxx") {
+		t.Errorf("RedactedDatabaseURL() = %q", red)
+	}
+	if (Config{}).RedactedDatabaseURL() != "" {
+		t.Error("RedactedDatabaseURL() of an unconfigured database should be empty")
+	}
+	if got := (Config{DatabaseURL: "postgres://[::1"}).RedactedDatabaseURL(); got != "(unparseable)" {
+		t.Errorf("RedactedDatabaseURL() of garbage = %q", got)
+	}
 }
 
 func TestLoad(t *testing.T) {
