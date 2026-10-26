@@ -188,8 +188,10 @@ OSS equivalents and key-based cosign via Key Vault (Phase 4) or local test keys 
 | Control | Phase 0 scope (ADR) | Planned |
 |---|---|---|
 | SHA-pinned actions, least-privilege `GITHUB_TOKEN` | Yes — `.github/workflows/ci.yml` (ADR-006) | Lockfile/zizmor P1 |
-| Dependabot (gomod, bun, github-actions, docker) | Yes (ADR-006) | Auto-merge policy P1 |
-| Zero third-party Go deps; frozen JS lockfile | Yes (ADR-002, ADR-003) | Each new dep → ADR |
+| Dependabot (gomod, bun, github-actions, docker, docker-compose) with 3-day cooldown | Yes (ADR-006) | Auto-merge policy P1 |
+| Zero third-party Go deps; frozen JS lockfile, `--ignore-scripts`, exact pins, 3-day `minimumReleaseAge` | Yes (ADR-002, ADR-003) | Each new dep → ADR |
+| Cross-origin (CSRF) protection, 1 MiB body limit, request-ID validation, no query strings in logs | Yes — `internal/server` (ADR-004) | AuthN/Z P2 (ADR-016) |
+| Web build fails on CSP-violating output (inline script/style, `on*=`, `javascript:`, `data:` CSS) | Yes — `web/scripts/build.ts` | Trusted Types P1 |
 | govulncheck in CI | Yes (ADR-006) | Reachability ingestion P2 |
 | Distroless nonroot image (UID 65532), digest-pinned bases | Yes — `Dockerfile` (ADR-005) | Signing P1 |
 | HTTP security headers, timeouts, graceful shutdown | Yes — `internal/server` (ADR-004) | CSP report-only telemetry P5 |

@@ -43,7 +43,7 @@ Distinguish **tested facts** from **assumptions** in every doc you touch.
   tokens, client secrets, connection strings or SAS tokens. CI authenticates to Azure via **OIDC
   workload identity federation only** (no long-lived secrets).
 - **Never commit secrets** — not even "test" ones that look real. Local dev defaults must be
-  obviously local (e.g. `postgres`/`postgres` on localhost behind a compose profile).
+  obviously local (e.g. `aegisflow-local-dev-only`, loopback-bound, behind the compose `db` profile).
 - **Least privilege everywhere**: workflow `permissions:` default `contents: read`, widened per job
   only when required; Azure RBAC scoped to resource group or resource, never subscription-wide
   `Owner`/`Contributor` for automation.

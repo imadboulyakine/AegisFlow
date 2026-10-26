@@ -16,7 +16,7 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 | 004 | HTTP surface, middleware and env-only config | Accepted |
 | 005 | Distroless nonroot multi-stage container | Accepted |
 | 006 | GitHub Actions CI hardening baseline | Accepted |
-| 007 | PostgreSQL as system of record (Phase 1+) | Accepted |
+| 007 | PostgreSQL as system of record (Phase 2+) | Accepted |
 | 008 | Azure target: Container Apps + ACR + Key Vault + Log Analytics + MI + OIDC + Bicep | Accepted |
 | 009 | Supply-chain toolchain | Accepted (versions verified 2026-10-26, see ADR-015) |
 | 010 | Explainable anomaly detection, no black-box ML in MVP | Accepted |
@@ -63,8 +63,12 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   structured access log, panic recovery, strict security headers (CSP, nosniff, Referrer-Policy,
   `frame-ancestors 'none'`, Permissions-Policy). `http.Server` timeouts, graceful shutdown. Config from
   env only (`AEGISFLOW_ADDR` default `:8080`, `AEGISFLOW_LOG_LEVEL`).
+- **As implemented (Phase 0)**: plus `AEGISFLOW_SHUTDOWN_TIMEOUT` (default 10s); `/api/*` errors are
+  RFC 9457 `application/problem+json` (404 unknown route, 405 with `Allow`); Go 1.25
+  `http.CrossOriginProtection` rejects cross-site unsafe methods (403); 1 MiB request body limit;
+  `/readyz` returns 503 while draining on shutdown; binary flags `-healthcheck` and `-version`.
 - **Consequences**: Probes map 1:1 to ACA startup/liveness/readiness; strict CSP constrains frontend
-  (no inline scripts).
+  (no inline scripts, no `data:` images — the web build fails on violations).
 - **Status**: Accepted — **Date**: 2026-10-26
 
 ### ADR-005 — Distroless nonroot multi-stage container
@@ -72,6 +76,11 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 - **Decision**: Multi-stage Dockerfile: bun build → `go build CGO_ENABLED=0 -trimpath` → distroless
   static nonroot; base images pinned by digest; port 8080; runs as nonroot; compatible with read-only
   root filesystem.
+- **As implemented (Phase 0)**: `oven/bun:1.4.4-alpine` → `golang:1.27.3-alpine` →
+  `gcr.io/distroless/static-debian13:nonroot` (Debian 13, because Debian 12 left regular security
+  support in June 2026), all digest-pinned; numeric `USER 65532:65532`; `HEALTHCHECK` runs
+  `/aegisflow -healthcheck` (no curl in distroless); cross-compiles via `$BUILDPLATFORM`/`TARGETARCH`.
+  Measured image: 18 MB on disk, ~4 MB compressed.
 - **Consequences**: No shell for debugging (use logs/ephemeral debug images); digest pins updated by
   Dependabot `docker`.
 - **Status**: Accepted — **Date**: 2026-10-26
@@ -83,12 +92,17 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   a `# vX.Y.Z` comment; jobs: Go (gofmt, vet, `test -race`, govulncheck, build), web (`bun install
   --frozen-lockfile`, typecheck, `bun test`, build), container build (no push). Dependabot for gomod,
   bun, github-actions, docker. No deployment workflow in Phase 0.
+- **As implemented (Phase 0)**: `persist-credentials: false` on every checkout; golangci-lint runs
+  via `make golangci-lint` (built from source with the go.mod toolchain, checksum-verified by
+  sum.golang.org) instead of a third-party action, so local and CI use the same command; Dependabot
+  also covers `docker-compose` and uses a 3-day `cooldown`; Bun installs use `--frozen-lockfile
+  --ignore-scripts` with a 3-day `minimumReleaseAge`.
 - **Consequences**: Updates arrive as reviewable Dependabot PRs; job-level permission escalation must
-  be explicit. Follow-ups in Phase 1: zizmor/actionlint, `persist-credentials: false`, evaluate GitHub
-  workflow lockfiles (public preview).
+  be explicit. Follow-ups in Phase 1: zizmor + actionlint in CI (`make actionlint` exists locally),
+  evaluate GitHub workflow dependency lockfiles (public preview).
 - **Status**: Accepted — **Date**: 2026-10-26
 
-### ADR-007 — PostgreSQL as system of record (Phase 1+)
+### ADR-007 — PostgreSQL as system of record (Phase 2+)
 - **Context**: Need relational joins (artifacts ↔ components ↔ findings) plus semi-structured evidence.
 - **Decision**: PostgreSQL with JSONB for SBOM/findings. Local via docker compose; Azure Database for
   PostgreSQL Flexible Server (Burstable) later, stopped when idle. No DB in Phase 0.
