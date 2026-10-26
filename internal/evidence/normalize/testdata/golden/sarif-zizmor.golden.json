@@ -1,0 +1,86 @@
+{
+  "format": "sarif",
+  "formatVersion": "2.1.0",
+  "tool": {
+    "name": "zizmor",
+    "version": "1.16.0"
+  },
+  "findings": [
+    {
+      "kind": "config",
+      "fingerprint": "5a1e14b818eda48a8fb3557f38f8e4768134438b79056b219fcdbddca76211c5",
+      "title": "artipacked",
+      "message": "credential persistence through GitHub Actions artifacts",
+      "severity": "medium",
+      "ruleId": "zizmor/artipacked",
+      "tools": [
+        {
+          "name": "zizmor",
+          "version": "1.16.0"
+        }
+      ],
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 8,
+        "endLine": 10
+      }
+    },
+    {
+      "kind": "config",
+      "fingerprint": "667c1b5e577d8fdc32bdc52a1caf372dd485344ebd26bf38ef1cec24a4c918f2",
+      "title": "excessive-permissions",
+      "message": "overly broad permissions",
+      "severity": "medium",
+      "ruleId": "zizmor/excessive-permissions",
+      "tools": [
+        {
+          "name": "zizmor",
+          "version": "1.16.0"
+        }
+      ],
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 5,
+        "endLine": 12
+      }
+    },
+    {
+      "kind": "config",
+      "fingerprint": "68fa4f30a477db01688e2d5971f35ab6be71d7831a3fde514276a0db5f6b6355",
+      "title": "dangerous-triggers",
+      "message": "use of fundamentally insecure workflow trigger",
+      "severity": "high",
+      "ruleId": "zizmor/dangerous-triggers",
+      "tools": [
+        {
+          "name": "zizmor",
+          "version": "1.16.0"
+        }
+      ],
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 2,
+        "endLine": 3
+      }
+    },
+    {
+      "kind": "config",
+      "fingerprint": "f10311cc776d27fdd2b6c23cc052b979a1e6ad850392c222d90b9500eea1cbd3",
+      "title": "template-injection",
+      "message": "code injection via template expansion",
+      "severity": "high",
+      "ruleId": "zizmor/template-injection",
+      "tools": [
+        {
+          "name": "zizmor",
+          "version": "1.16.0"
+        }
+      ],
+      "location": {
+        "path": ".github/workflows/ci.yml",
+        "startLine": 11,
+        "endLine": 11
+      }
+    }
+  ]
+}

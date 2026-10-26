@@ -1,0 +1,136 @@
+{
+  "format": "govulncheck",
+  "formatVersion": "v1.0.0",
+  "tool": {
+    "name": "govulncheck",
+    "version": "v1.9.0"
+  },
+  "subject": {
+    "kind": "source",
+    "name": "example.com/vulnapp"
+  },
+  "components": [
+    {
+      "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "name": "golang.org/x/net",
+      "version": "v0.0.0-20220722155237-a158d28d115b",
+      "ecosystem": "golang"
+    },
+    {
+      "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+      "name": "golang.org/x/text",
+      "version": "v0.3.7",
+      "ecosystem": "golang"
+    },
+    {
+      "purl": "pkg:golang/stdlib@v1.27.3",
+      "name": "stdlib",
+      "version": "v1.27.3",
+      "ecosystem": "golang"
+    }
+  ],
+  "findings": [
+    {
+      "kind": "vulnerability",
+      "fingerprint": "cb4b3328098d9929e8b036a87b7650baed8aa5660f1b48402fcd32ebcce5b05b",
+      "title": "CVE-2023-39325 in golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "message": "HTTP/2 rapid reset can cause excessive work in net/http",
+      "severity": "unknown",
+      "ruleId": "GO-2023-2102",
+      "tools": [
+        {
+          "name": "govulncheck",
+          "version": "v1.9.0"
+        }
+      ],
+      "vulnerability": {
+        "id": "CVE-2023-39325",
+        "aliases": [
+          "GO-2023-2102",
+          "BIT-golang-2023-39325",
+          "GHSA-4374-p667-p6c8"
+        ],
+        "summary": "HTTP/2 rapid reset can cause excessive work in net/http",
+        "severity": "unknown",
+        "published": "2023-10-11T16:49:53Z"
+      },
+      "component": {
+        "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+        "name": "golang.org/x/net",
+        "version": "v0.0.0-20220722155237-a158d28d115b",
+        "ecosystem": "golang"
+      },
+      "fixedVersions": [
+        "v0.17.0"
+      ],
+      "reachability": "imported"
+    },
+    {
+      "kind": "vulnerability",
+      "fingerprint": "591493c00f48e4ea31d4446e5b7251337e8315c90c4c0bf912763b4b87f84c2f",
+      "title": "CVE-2026-25681 in golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "message": "Invoking incorrect handling of character references in DOCTYPE nodes in golang.org/x/net/html",
+      "severity": "unknown",
+      "ruleId": "GO-2026-5029",
+      "tools": [
+        {
+          "name": "govulncheck",
+          "version": "v1.9.0"
+        }
+      ],
+      "vulnerability": {
+        "id": "CVE-2026-25681",
+        "aliases": [
+          "GO-2026-5029"
+        ],
+        "summary": "Invoking incorrect handling of character references in DOCTYPE nodes in golang.org/x/net/html",
+        "severity": "unknown",
+        "published": "2026-05-22T02:46:43Z"
+      },
+      "component": {
+        "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+        "name": "golang.org/x/net",
+        "version": "v0.0.0-20220722155237-a158d28d115b",
+        "ecosystem": "golang"
+      },
+      "fixedVersions": [
+        "v0.55.0"
+      ],
+      "reachability": "imported"
+    },
+    {
+      "kind": "vulnerability",
+      "fingerprint": "4cb2f28bf7a7812b31072d1a39ecfee0eec85bd1914f2ee0e5e0f5200888334e",
+      "title": "CVE-2022-32149 in golang.org/x/text@v0.3.7",
+      "message": "Denial of service via crafted Accept-Language header in golang.org/x/text/language",
+      "severity": "unknown",
+      "ruleId": "GO-2022-1059",
+      "tools": [
+        {
+          "name": "govulncheck",
+          "version": "v1.9.0"
+        }
+      ],
+      "vulnerability": {
+        "id": "CVE-2022-32149",
+        "aliases": [
+          "GO-2022-1059",
+          "GHSA-69ch-w2m2-3vjp"
+        ],
+        "summary": "Denial of service via crafted Accept-Language header in golang.org/x/text/language",
+        "severity": "unknown",
+        "published": "2022-10-11T18:16:24Z"
+      },
+      "component": {
+        "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+        "name": "golang.org/x/text",
+        "version": "v0.3.7",
+        "ecosystem": "golang"
+      },
+      "fixedVersions": [
+        "v0.3.8"
+      ],
+      "reachability": "called"
+    }
+  ]
+}

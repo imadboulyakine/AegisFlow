@@ -1,0 +1,96 @@
+{
+  "format": "grype",
+  "tool": {
+    "name": "grype",
+    "version": "0.121.0"
+  },
+  "subject": {
+    "kind": "container-image",
+    "name": "ghcr.io/imadboulyakine/aegisflow-demo",
+    "digest": "sha256:18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99"
+  },
+  "findings": [
+    {
+      "kind": "vulnerability",
+      "fingerprint": "4cb2f28bf7a7812b31072d1a39ecfee0eec85bd1914f2ee0e5e0f5200888334e",
+      "title": "CVE-2022-32149 in golang.org/x/text@v0.3.7",
+      "message": "golang.org/x/text/language Denial of service via crafted Accept-Language header",
+      "severity": "high",
+      "ruleId": "GHSA-69ch-w2m2-3vjp",
+      "tools": [
+        {
+          "name": "grype",
+          "version": "0.121.0"
+        }
+      ],
+      "vulnerability": {
+        "id": "CVE-2022-32149",
+        "aliases": [
+          "GHSA-69ch-w2m2-3vjp"
+        ],
+        "summary": "golang.org/x/text/language Denial of service via crafted Accept-Language header",
+        "cvss": [
+          {
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "baseScore": 7.5
+          }
+        ],
+        "severity": "high",
+        "cwes": [
+          "CWE-772"
+        ]
+      },
+      "component": {
+        "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+        "name": "golang.org/x/text",
+        "version": "v0.3.7",
+        "ecosystem": "golang",
+        "licenses": [
+          "BSD-3-Clause"
+        ]
+      },
+      "fixedVersions": [
+        "0.3.8"
+      ],
+      "reachability": "unknown"
+    },
+    {
+      "kind": "vulnerability",
+      "fingerprint": "c7496a98123f68211f258a9ade281a9e203cdb65d9824451bac2cd7f50e945ed",
+      "title": "CVE-2005-2541 in tar@1.35+dfsg-3.1",
+      "message": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files, which may allow local users or remote attackers to gain privileges.",
+      "severity": "info",
+      "ruleId": "CVE-2005-2541",
+      "tools": [
+        {
+          "name": "grype",
+          "version": "0.121.0"
+        }
+      ],
+      "vulnerability": {
+        "id": "CVE-2005-2541",
+        "summary": "Tar 1.15.1 does not properly warn the user when extracting setuid or setgid files, which may allow local users or remote attackers to gain privileges.",
+        "cvss": [
+          {
+            "version": "2.0",
+            "vector": "AV:N/AC:L/Au:N/C:C/I:C/A:C",
+            "baseScore": 10
+          }
+        ],
+        "severity": "info"
+      },
+      "component": {
+        "purl": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13",
+        "name": "tar",
+        "version": "1.35+dfsg-3.1",
+        "ecosystem": "deb",
+        "licenses": [
+          "GPL-2.0-only",
+          "GPL-3.0-only"
+        ]
+      },
+      "reachability": "unknown"
+    }
+  ]
+}

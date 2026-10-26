@@ -1,0 +1,51 @@
+{
+  "format": "spdx",
+  "formatVersion": "2.3",
+  "tool": {
+    "name": "syft",
+    "version": "1.55.0"
+  },
+  "subject": {
+    "kind": "container-image",
+    "name": "gcr.io/distroless/static-debian13",
+    "digest": "sha256:433bb346cd0b6b8346462f879adaa4ac0fbb463a72901b46736ede4aeca3dadc"
+  },
+  "components": [
+    {
+      "purl": "pkg:deb/debian/base-files@13.8%2Bdeb13u7?arch=amd64&distro=debian-13.7",
+      "name": "base-files",
+      "version": "13.8+deb13u7",
+      "ecosystem": "deb",
+      "licenses": [
+        "GPL-2.0-only AND GPL-2.0-or-later AND LicenseRef-verbatim"
+      ]
+    },
+    {
+      "purl": "pkg:deb/debian/ca-certificates@20250419%2Bdeb13u1?arch=all&distro=debian-13.7",
+      "name": "ca-certificates",
+      "version": "20250419+deb13u1",
+      "ecosystem": "deb",
+      "licenses": [
+        "GPL-2.0-only AND GPL-2.0-or-later AND MPL-2.0"
+      ]
+    },
+    {
+      "purl": "pkg:deb/debian/tzdata@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7",
+      "name": "tzdata",
+      "version": "2026e-0+deb13u1",
+      "ecosystem": "deb",
+      "licenses": [
+        "LicenseRef-public-domain"
+      ]
+    },
+    {
+      "purl": "pkg:deb/debian/tzdata-legacy@2026e-0%2Bdeb13u1?arch=all&distro=debian-13.7&upstream=tzdata",
+      "name": "tzdata-legacy",
+      "version": "2026e-0+deb13u1",
+      "ecosystem": "deb",
+      "licenses": [
+        "LicenseRef-public-domain"
+      ]
+    }
+  ]
+}

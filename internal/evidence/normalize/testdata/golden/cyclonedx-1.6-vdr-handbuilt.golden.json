@@ -1,0 +1,178 @@
+{
+  "format": "cyclonedx",
+  "formatVersion": "1.6",
+  "tool": {
+    "name": "trivy",
+    "version": "0.76.1"
+  },
+  "subject": {
+    "kind": "container-image",
+    "name": "ghcr.io/imadboulyakine/aegisflow-demo",
+    "digest": "sha256:18f4cc26c9ffa7f20a359298be7deadac5c607c8e03a02b8119f1a5fc2f82c99"
+  },
+  "components": [
+    {
+      "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+      "name": "golang.org/x/text",
+      "version": "v0.3.7",
+      "ecosystem": "golang",
+      "licenses": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "name": "golang.org/x/net",
+      "version": "v0.0.0-20220722155237-a158d28d115b",
+      "ecosystem": "golang",
+      "licenses": [
+        "BSD-3-Clause"
+      ]
+    },
+    {
+      "purl": "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13",
+      "name": "tar",
+      "version": "1.35+dfsg-3.1",
+      "ecosystem": "deb",
+      "licenses": [
+        "GPL-2.0-only OR GPL-3.0-only",
+        "GPL-3.0-or-later"
+      ]
+    }
+  ],
+  "findings": [
+    {
+      "kind": "vulnerability",
+      "fingerprint": "4cb2f28bf7a7812b31072d1a39ecfee0eec85bd1914f2ee0e5e0f5200888334e",
+      "title": "CVE-2022-32149 in golang.org/x/text@v0.3.7",
+      "message": "An attacker may cause a denial of service by crafting an Accept-Language header which ParseAcceptLanguage will take significant time to parse.",
+      "severity": "high",
+      "ruleId": "CVE-2022-32149",
+      "tools": [
+        {
+          "name": "trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "vulnerability": {
+        "id": "CVE-2022-32149",
+        "aliases": [
+          "GHSA-69ch-w2m2-3vjp"
+        ],
+        "summary": "An attacker may cause a denial of service by crafting an Accept-Language header which ParseAcceptLanguage will take significant time to parse.",
+        "cvss": [
+          {
+            "version": "3.1",
+            "vector": "CVSS:3.1/AV:N/AC:L/PR:N/UI:N/S:U/C:N/I:N/A:H",
+            "baseScore": 7.5
+          }
+        ],
+        "severity": "high",
+        "cwes": [
+          "CWE-772"
+        ],
+        "published": "2022-10-14T15:15:00Z"
+      },
+      "component": {
+        "purl": "pkg:golang/golang.org/x/text@v0.3.7",
+        "name": "golang.org/x/text",
+        "version": "v0.3.7",
+        "ecosystem": "golang",
+        "licenses": [
+          "BSD-3-Clause"
+        ]
+      },
+      "reachability": "unknown"
+    },
+    {
+      "kind": "vulnerability",
+      "fingerprint": "899b0d3a6bd18e60893dbae059abef8e2da2443b0d4e02d5b899db5f88805c77",
+      "title": "GHSA-xxxx-fixture-0001 in golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+      "message": "Synthetic advisory (fixture only) with a CVSS v4 rating and no qualitative severity.",
+      "severity": "medium",
+      "ruleId": "GHSA-xxxx-fixture-0001",
+      "tools": [
+        {
+          "name": "trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "vulnerability": {
+        "id": "GHSA-xxxx-fixture-0001",
+        "summary": "Synthetic advisory (fixture only) with a CVSS v4 rating and no qualitative severity.",
+        "cvss": [
+          {
+            "version": "4.0",
+            "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+            "baseScore": 5.3
+          }
+        ],
+        "severity": "medium"
+      },
+      "component": {
+        "purl": "pkg:golang/golang.org/x/net@v0.0.0-20220722155237-a158d28d115b",
+        "name": "golang.org/x/net",
+        "version": "v0.0.0-20220722155237-a158d28d115b",
+        "ecosystem": "golang",
+        "licenses": [
+          "BSD-3-Clause"
+        ]
+      },
+      "reachability": "unknown"
+    },
+    {
+      "kind": "vulnerability",
+      "fingerprint": "ea66aa2f34726dac78880f6c145ddf99c12d8e745ccdef5771392d970e04e681",
+      "title": "GHSA-xxxx-fixture-0001 in @fixture/unlisted@1.2.3",
+      "message": "Synthetic advisory (fixture only) with a CVSS v4 rating and no qualitative severity.",
+      "severity": "medium",
+      "ruleId": "GHSA-xxxx-fixture-0001",
+      "tools": [
+        {
+          "name": "trivy",
+          "version": "0.76.1"
+        }
+      ],
+      "vulnerability": {
+        "id": "GHSA-xxxx-fixture-0001",
+        "summary": "Synthetic advisory (fixture only) with a CVSS v4 rating and no qualitative severity.",
+        "cvss": [
+          {
+            "version": "4.0",
+            "vector": "CVSS:4.0/AV:N/AC:L/AT:N/PR:N/UI:N/VC:N/VI:N/VA:L/SC:N/SI:N/SA:N",
+            "baseScore": 5.3
+          }
+        ],
+        "severity": "medium"
+      },
+      "component": {
+        "purl": "pkg:npm/%40fixture/unlisted@1.2.3",
+        "name": "@fixture/unlisted",
+        "version": "1.2.3",
+        "ecosystem": "npm"
+      },
+      "reachability": "unknown"
+    }
+  ],
+  "vex": [
+    {
+      "vulnId": "CVE-2022-32149",
+      "products": [
+        "pkg:golang/golang.org/x/text@v0.3.7"
+      ],
+      "status": "affected",
+      "impactStatement": "ParseAcceptLanguage is reachable from the public HTTP handler.",
+      "timestamp": "2023-11-07T03:47:00Z"
+    },
+    {
+      "vulnId": "CVE-2005-2541",
+      "products": [
+        "pkg:deb/debian/tar@1.35%2Bdfsg-3.1?arch=amd64&distro=debian-13"
+      ],
+      "status": "not_affected",
+      "justification": "code_not_reachable",
+      "impactStatement": "The image never invokes tar.",
+      "timestamp": "2026-10-20T10:00:00Z"
+    }
+  ]
+}
