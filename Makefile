@@ -127,6 +127,11 @@ docker-run: ## Run the image read-only, unprivileged, on :8080
 	$(DOCKER) run --rm -it -p 8080:8080 --read-only --cap-drop ALL \
 		--security-opt no-new-privileges:true $(IMAGE)
 
+## ---------- Security scanning (Phase 1, see mk/*.mk) ----------
+
+# Each security area owns one fragment in mk/ (code-security.mk, supply-chain.mk, ...).
+-include $(sort $(wildcard mk/*.mk))
+
 ## ---------- Housekeeping ----------
 
 .PHONY: clean

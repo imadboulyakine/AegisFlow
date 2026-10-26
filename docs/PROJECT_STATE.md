@@ -14,7 +14,8 @@ Last updated: 2026-10-26 — Phase 0 (bootstrap) — branch `claude/serene-frank
 | 1 Secure CI foundation | Not started | Blocked on owner answers Q1–Q3 (DECISIONS.md) for signing mode |
 | 2–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
 
-Nothing has been created in Azure. No Azure login was performed. No secrets are committed.
+Nothing has been created in Azure. Read-only Azure discovery was run on 2026-10-26 with the
+owner-authorised service principal (ADR-017; `scripts/azure/discover.py`). No secrets are committed.
 
 ## 2. Implementation status (Phase 0)
 
@@ -69,7 +70,7 @@ Full audit with commands and evidence was produced in-session; key results:
 | arm64 emulation (QEMU) | NOT AVAILABLE | multi-arch only via cross-compile or CI |
 | Azure CLI | NOT INSTALLED, installable | `pip install azure-cli` (2.91.0) in a venv works; **no login by design** |
 | Bicep | installable | 0.48.1 binary from GitHub releases builds/lints; `az bicep install` blocked |
-| Azure authentication | **POSSIBLE BUT NOT USED** | see §5 blocker B1 |
+| Azure authentication | **TESTED OK (read-only)** | owner-authorised SP (ADR-017); token + ARM GETs work; see §4.1 |
 | GitHub | MCP tools work for `imadboulyakine/AegisFlow` only (admin); `gh` CLI unauthenticated; `git ls-remote`/release downloads of public repos OK | |
 | Security tools | gitleaks, syft, trivy (DB via mirror.gcr.io), gosec, staticcheck, semgrep (local rules) OK; osv-scanner/govulncheck offline only; grype DB blocked; cosign key-based only (keyless/Sigstore blocked) | installable to scratch dirs, checksums verified |
 | Playwright | TESTED OK with `@playwright/test@1.63.0` (matches `/opt/pw-browsers` Chromium) | 1.64.x cannot find a browser; `playwright install` blocked |
@@ -82,11 +83,25 @@ Full audit with commands and evidence was produced in-session; key results:
 needs live vulnerability feeds, Sigstore keyless, GitHub OIDC or Azure runs **in CI only**. Design
 feed clients and the provenance verifier with recorded fixtures so they are testable offline.
 
+### 4.1 Azure subscription facts (read-only, 2026-10-26)
+
+| Fact | Value |
+|---|---|
+| Offer | Azure free account (`quotaId FreeTrial_2014-09-01`), spending limit **on**, state Enabled |
+| SP role | Contributor @ subscription (cannot create role assignments) |
+| Policies | ASC Default + Microsoft mandatory-MFA policies for user write/delete; **no allowed-locations policy** |
+| Region | francecentral offers `Microsoft.App/managedEnvironments` → ADR-013 Accepted |
+| Providers | Microsoft.App, ContainerRegistry, KeyVault, OperationalInsights, Insights, ManagedIdentity, DBforPostgreSQL **NotRegistered** (register in Phase 4) |
+| Existing resources | 6 RGs / 26 resources, none AegisFlow (owner's labs; VMs deallocated) |
+| Spend | Sept 2026 $0.00; Oct 2026 MTD $37.49 (lab RGs) |
+| Budgets | none; Defender: Foundational CSPM (free) + "Discovery" on Standard tier |
+
 ## 5. Blockers and risks
 
 | ID | Blocker / risk | Impact | Owner action |
 |---|---|---|---|
-| B1 | **Azure service-principal credentials are present as environment variables in the cloud environment** (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_SECRET` — names/shape only checked, values never printed or used). Any Azure SDK `DefaultAzureCredential` in the container would authenticate silently. | Contradicts ADR-008 (OIDC only, no long-lived secrets); blast radius unknown | Decide: remove them from the Claude Code environment settings, or keep them only if scoped to least privilege (e.g. Reader on one resource group) and rotate. Agents must run any `az` command with these variables unset. |
+| B1 | Azure SP in the session environment has **Contributor on the whole subscription** | **Accepted risk** by the owner (ADR-017); sessions may use it read-only, writes only after Phase 4 approval and only in AegisFlow RGs | Recommended before Phase 4: scope SP to the AegisFlow RG, rotate the secret |
+| B6 | Subscription is a **free trial** (credit valid 30 days from sign-up) and the owner's other labs bill ~$40+/month while idle (NAT gateway, Standard public IPs) | Phase 4 likely needs a pay-as-you-go upgrade | Owner: check credit/expiry in the portal; clean up idle lab networking |
 | B2 | Repository is private: no artifact attestations, CodeQL, dependency review, push protection; Actions minutes capped | Phase 1 tooling choice | Answer Q1–Q3 (ADR-014) |
 | B3 | Azure retail prices could not be pulled (prices.azure.com blocked) | AZURE_COSTS.md values are estimates | Re-verify before Phase 4 (queries listed in AZURE_COSTS.md §1) |
 | B4 | Branch protection / rulesets not configured on `main` | Direct pushes possible | Owner: enable after Phase 0 merge (plan-dependent) |

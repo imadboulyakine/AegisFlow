@@ -22,10 +22,11 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 | 010 | Explainable anomaly detection, no black-box ML in MVP | Accepted |
 | 011 | Policy engine: CEL (`cel.dev/cel-go`) over OPA/Rego | Proposed |
 | 012 | Risk scoring formula | Proposed |
-| 013 | Azure region | Proposed (blocked on owner input) |
-| 014 | Repository visibility and GitHub feature strategy | Proposed (owner decision) |
-| 015 | Scanner and signing tool pinning after 2025–2026 action compromises | Proposed |
+| 013 | Azure region: francecentral | Accepted |
+| 014 | Repository visibility: private now, public at end of Phase 1 | Accepted |
+| 015 | Scanner and signing tool pinning after 2025–2026 action compromises | Accepted |
 | 016 | Authentication: GitHub OIDC for CI ingestion, Entra ID for the dashboard | Proposed |
+| 017 | Agent sessions may use the owner's Azure service principal (accepted risk) | Accepted |
 
 ---
 
@@ -170,10 +171,14 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   Policy whose list varies per subscription** (Microsoft Q&A reports; not officially documented), so
   the preferred region may be disallowed. Prices in EU regions are similar; francecentral is often
   slightly cheaper than westeurope for compute [E].
-- **Decision (proposed)**: francecentral if allowed, else westeurope, else the first allowed EU region;
-  single region for all resources; record the subscription's allowed-locations list here before Phase 4.
+- **Facts (read-only ARM queries, 2026-10-26)**: the subscription is an Azure *free account*
+  (`quotaId FreeTrial_2014-09-01`, spending limit on), not Azure for Students; it has **no
+  allowed-locations policy** (only the default ASC assignment and Microsoft's mandatory-MFA policies
+  for user write/delete actions); `Microsoft.App/managedEnvironments` is offered in France Central.
+- **Decision**: **francecentral** for every AegisFlow resource (single region); westeurope is the
+  fallback only if a SKU is unavailable there. Bicep keeps `location` as a parameter.
 - **Consequences**: Bicep takes `location` as a parameter; no multi-region.
-- **Status**: Proposed (blocked on owner input) — **Date**: 2026-10-26
+- **Status**: Accepted (owner delegated to the recommendation) — **Date**: 2026-10-26
 
 ### ADR-014 — Repository visibility and GitHub feature strategy
 - **Context**: `imadboulyakine/AegisFlow` is **private** on a personal account (plan unknown; Student
@@ -195,19 +200,25 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 - **Consequences**: Public repo exposes code and workflows (they contain no secrets by design); fork-PR
   workflows must stay unprivileged (`pull_request`, never `pull_request_target` with PR checkout). If the
   owner/school requires privacy, (b) is adopted and SECURITY_MODEL.md §7 limitations become thesis limits.
-- **Status**: Proposed (owner decision) — **Date**: 2026-10-26
+- **Owner decision (2026-10-26)**: recommendation (a) adopted. Phase 1a adds OSS scanners while
+  private; signing/provenance (keyless cosign + `actions/attest`) is the last Phase 1 step, done right
+  after the visibility switch. The switch itself is an owner action (repo setting), preceded by a
+  clean full-history gitleaks scan, `SECURITY.md` and a licence (Apache-2.0 recommended — owner to
+  confirm the school has no IP clause).
+- **Status**: Accepted — **Date**: 2026-10-26
 
 ### ADR-015 — Scanner and signing tool pinning
 - **Context**: Trivy release v0.69.4 and 76 of 77 `trivy-action` tags were maliciously replaced in
   March 2026 (GHSA-69fq-xp46-6x23 / CVE-2026-33634); similar tag hijacks hit tj-actions (2025),
   xygeni-action (CVE-2026-31976) and actions-cool (2026).
-- **Decision (proposed)**: Grype is the primary container scanner (native Syft SBOM input), Trivy an
+- **Decision**: Grype is the primary container scanner (native Syft SBOM input), Trivy an
   optional cross-check. All scanner binaries are installed by checksum/signature-verified download or
   digest-pinned container image — never via `@latest`/mutable tags; actions pinned by SHA (ADR-006);
   tool versions recorded in every evidence row.
 - **Consequences**: Slightly more workflow code (verify checksums/cosign signatures of tools);
-  evidence is attributable to exact tool versions.
-- **Status**: Proposed — **Date**: 2026-10-26
+  evidence is attributable to exact tool versions. Go-based tools may also be run with
+  `go run module@vX.Y.Z`, which is verified against sum.golang.org (implemented in Phase 1a).
+- **Status**: Accepted — **Date**: 2026-10-26
 
 ### ADR-016 — Authentication for CI ingestion and dashboard
 - **Context**: Evidence must be attributable to a specific repo/run/commit; the dashboard has one admin.
@@ -218,6 +229,25 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 - **Consequences**: No shared secrets for ingestion; a JWT library or ~200 lines of stdlib verification
   (decide by ADR in Phase 2); built-in auth ties dashboard auth to ACA (acceptable for MVP).
 - **Status**: Proposed — **Date**: 2026-10-26
+
+### ADR-017 — Agent sessions may use the owner's Azure service principal
+- **Context**: The Claude Code cloud environment exposes an Entra service principal through
+  `AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_SECRET`. Read-only
+  discovery (2026-10-26) showed it holds **Contributor on the whole subscription**, which also contains
+  the owner's unrelated lab resource groups. AGENTS.md originally forbade credentials in sessions.
+- **Decision**: The owner explicitly authorised agent sessions to use this service principal
+  ("personal project"). Rules: (1) never print, log, commit or pass the secret on a command line —
+  read it from the environment inside the tool (SDK `EnvironmentCredential` or a token request whose
+  body is built in-process); (2) read-only operations are allowed at any time; (3) every
+  **write or billable** action still needs the phase gate in AGENTS.md §3 (Phase 4 approval recorded
+  here) and must stay inside the AegisFlow resource group(s); (4) never touch resources AegisFlow did not
+  create; (5) CI keeps OIDC federation (ADR-008) — this secret is never copied into GitHub.
+- **Consequences**: Accepted risk: a leaked session environment would expose subscription-wide
+  Contributor. Mitigations recommended to the owner before Phase 4: scope the SP to the AegisFlow
+  resource group, rotate the secret, add a subscription budget. Contributor cannot create role
+  assignments, so Phase 4 needs the owner (or an RBAC Administrator role constrained to the RG) to grant
+  the GitHub OIDC identity its roles.
+- **Status**: Accepted (owner decision) — **Date**: 2026-10-26
 
 ---
 
@@ -233,17 +263,20 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 Source: github/docs `data/reusables/gated-features/*` and billing reference @56547cc (2026-10-26); full
 matrix and signing-privacy analysis in SECURITY_MODEL.md §7.
 
-## Open questions for the project owner
+## Owner decisions (2026-10-26)
 
-| # | Question | Why it matters | Blocks |
+The owner asked to adopt the recommended answer for each open question. Facts marked [V] were
+verified with read-only Azure Resource Manager queries on 2026-10-26.
+
+| # | Question | Answer | Status |
 |---|---|---|---|
-| Q1 | **Repository visibility (ADR-014)**: OK to make AegisFlow public at end of Phase 1? Any school/supervisor confidentiality rule? | Unlocks attestations, CodeQL, push protection, rulesets, environments, unlimited minutes | Phase 1 exit |
-| Q2 | Which GitHub plan is on the account (Free, or Pro via Student Developer Pack)? | Rulesets/environments on private repos, 2,000 vs 3,000 minutes | Phase 1 |
-| Q3 | Is keyless signing's public Rekor metadata (repo name, commit SHAs) acceptable while private? | Chooses signing mode | Phase 1 |
-| Q4 | Azure subscription type (Azure for Students / free account / pay-as-you-go), remaining credit, and whether the PostgreSQL 12-month free offer applies | Cost scenarios, Postgres cost | Phase 4 |
-| Q5 | Allowed regions listed in the subscription's Azure Policy ("Allowed resource deployment regions"); preference between francecentral and westeurope | ADR-013 | Phase 4 |
-| Q6 | Can you create app registrations in your Entra tenant (university tenants often block this)? If not, we use a user-assigned managed identity with a federated credential | OIDC setup path | Phase 4 |
-| Q7 | Monthly budget ceiling and alert e-mail for Azure budgets | Budget + action group values | Phase 4 |
-| Q8 | Is a custom domain needed for the demo, or is the default `*.azurecontainerapps.io` URL fine? | Front Door / managed certificate cost | Phase 4 |
-| Q9 | Thesis and documentation language (French or English)? Defence date? | Docs language, schedule calibration | Phase 6 |
-| Q10 | Who needs dashboard access (only you, or supervisor/jury)? | Auth configuration | Phase 4 |
+| Q1 | Repository visibility | Private through Phase 1a; switch to **public at the end of Phase 1** (ADR-014) | Decided |
+| Q2 | GitHub plan | Unknown — **assume Free** (no rulesets/environments on private repos) until verified | Assumption |
+| Q3 | Keyless signing while private | **No** — sign keylessly + `actions/attest` only after going public | Decided |
+| Q4 | Azure subscription type | [V] Azure **free account** (`FreeTrial`, spending limit on); $0 in Sept, $37.49 month-to-date in Oct in the owner's other lab RGs. Free-trial credit expires 30 days after sign-up, so Phase 4 will most likely need an upgrade to pay-as-you-go (12-month free services incl. PostgreSQL B1ms 750 h/month remain) | Decided; owner to check credit balance/expiry in the portal |
+| Q5 | Allowed regions | [V] No allowed-locations policy → **francecentral** (ADR-013) | Decided |
+| Q6 | Entra identity for CI | Use a **user-assigned managed identity with a GitHub federated credential** (no app registration needed); the existing SP (Contributor @ subscription [V]) cannot create role assignments → owner grants roles in Phase 4 | Decided |
+| Q7 | Budget | **$20/month** budget scoped to the AegisFlow resource group, alerts at 50/80/100 % actual and 100 % forecast; alert e-mail supplied at deploy time (never committed). Created as the first Phase 4 resource | Decided |
+| Q8 | Custom domain | **No** — default `*.azurecontainerapps.io` URL with managed TLS | Decided |
+| Q9 | Thesis language / defence date | Repo docs stay in **English**; thesis language follows the school's rules (not blocking before Phase 6) | Partly open |
+| Q10 | Dashboard users | **Owner only**; supervisor/jury see a live demo (Entra guest access only if required) | Decided |

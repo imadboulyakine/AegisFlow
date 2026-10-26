@@ -39,9 +39,11 @@ Distinguish **tested facts** from **assumptions** in every doc you touch.
 - **No billable cloud action without explicit owner approval** recorded in `docs/DECISIONS.md`.
   This includes `az deployment *`, `az group create`, creating any Azure resource, enabling Defender
   plans, buying anything. Phase 4 is the first billable phase.
-- **No credentials in agent sessions.** Do not run `az login`, do not ask for or handle secrets,
-  tokens, client secrets, connection strings or SAS tokens. CI authenticates to Azure via **OIDC
-  workload identity federation only** (no long-lived secrets).
+- **Credentials (ADR-017).** The owner authorised sessions to use the Azure service principal
+  provided as `AZURE_*` environment variables. Never print, log, commit or put the secret on a command
+  line; never ask anyone to paste secrets. Read-only Azure operations are fine; writes/billable actions
+  follow the phase gate above and stay inside AegisFlow resource groups; never modify resources
+  AegisFlow did not create. CI authenticates to Azure via **OIDC workload identity federation only**.
 - **Never commit secrets** — not even "test" ones that look real. Local dev defaults must be
   obviously local (e.g. `aegisflow-local-dev-only`, loopback-bound, behind the compose `db` profile).
 - **Least privilege everywhere**: workflow `permissions:` default `contents: read`, widened per job

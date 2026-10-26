@@ -211,7 +211,10 @@ This column states Phase 0 *scope*; the authoritative record of what was actuall
   malicious commit already inside a pinned action SHA is not detected by pinning; (4) EPSS/KEV lag for
   new CVEs; govulncheck reachability has false negatives (reflection, unsafe) and binary mode cannot show
   call paths (V1); (5) keyless signing metadata disclosure if used while private; (6) public Postgres
-  endpoint in MVP; (7) daily cap on Log Analytics stops log collection when reached (M1).
+  endpoint in MVP; (7) daily cap on Log Analytics stops log collection when reached (M1); (8) **accepted
+  by the owner (ADR-017)**: agent sessions hold an Azure service-principal secret with Contributor on the
+  whole subscription — a compromised session environment could modify any resource in it; mitigations
+  recommended: scope it to the AegisFlow resource group, rotate the secret, budget alerts.
 
 ## 11. Sources (accessed 2026-10-26)
 
