@@ -4,6 +4,7 @@ import (
 	"crypto/rand"
 	"encoding/hex"
 	"log/slog"
+	"reflect"
 	"strings"
 	"testing"
 	"time"
@@ -183,7 +184,7 @@ func TestLoad(t *testing.T) {
 						t.Errorf("Load() error = %q, want it to contain %q", err, s)
 					}
 				}
-				if got != (Config{}) {
+				if !reflect.DeepEqual(got, Config{}) {
 					t.Errorf("Load() returned non-zero config on error: %+v", got)
 				}
 				return
@@ -191,7 +192,10 @@ func TestLoad(t *testing.T) {
 			if err != nil {
 				t.Fatalf("Load() unexpected error: %v", err)
 			}
-			if got != tt.want {
+			// Phase 2 settings keep their defaults in these cases.
+			tt.want.Intel = IntelConfig{RefreshInterval: DefaultIntelRefreshInterval}
+			tt.want.DefaultExposure = DefaultExposure
+			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("Load() = %+v, want %+v", got, tt.want)
 			}
 		})
