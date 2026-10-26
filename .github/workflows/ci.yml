@@ -1,0 +1,164 @@
+# Continuous integration (ADR-006). No deployment and no image push in Phase 0.
+#
+# Supply-chain rules for this file:
+#   - every action is pinned to a full commit SHA (tag in the trailing comment; Dependabot bumps both)
+#   - least privilege: read-only GITHUB_TOKEN, checkout does not persist credentials
+#   - untrusted event data is never interpolated into `run:` scripts
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  # Keep in sync with the Makefile.
+  GOLANGCI_LINT_VERSION: v2.15.0
+
+jobs:
+  go:
+    name: Go · fmt, vet, lint, test, vuln, build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go (version from go.mod toolchain directive)
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.mod # no go.sum yet: zero third-party Go dependencies
+
+      - name: go.mod is tidy
+        run: go mod tidy -diff
+
+      - name: gofmt
+        run: make go-fmt-check
+
+      - name: go vet
+        run: make go-vet
+
+      # Built from source with the go.mod toolchain (same path as local `make lint`): prebuilt
+      # golangci-lint binaries compiled with an older Go refuse to lint a go1.27 module, and
+      # this avoids one more third-party action in the supply chain.
+      - name: golangci-lint
+        run: make golangci-lint GOLANGCI_LINT_VERSION="$GOLANGCI_LINT_VERSION"
+
+      - name: Test (race detector + coverage)
+        run: |
+          make go-test
+          {
+            echo "### Go coverage"
+            echo '```'
+            go tool cover -func=coverage.out | tail -n 1
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      - name: govulncheck
+        run: make vuln
+
+      - name: Build binary
+        run: make go-build
+
+  web:
+    name: Web · typecheck, test, build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: web
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Bun (version from web/package.json packageManager)
+        uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+        with:
+          bun-version-file: web/package.json
+
+      - name: Cache Bun packages
+        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        with:
+          path: ~/.bun/install/cache
+          key: bun-${{ runner.os }}-${{ hashFiles('web/bun.lock') }}
+
+      - name: Install (frozen lockfile, no lifecycle scripts)
+        run: bun install --frozen-lockfile --ignore-scripts
+
+      - name: Typecheck
+        run: bun run typecheck
+
+      - name: Unit tests
+        run: bun test
+
+      - name: Build bundle
+        run: |
+          bun run build
+          test -f ../internal/webui/dist/index.html
+
+  container:
+    name: Container · build and smoke test
+    needs: [go, web]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
+
+      - name: Build metadata
+        id: meta
+        run: echo "build-date=$(date -u +%Y-%m-%dT%H:%M:%SZ)" >> "$GITHUB_OUTPUT"
+
+      - name: Build image (no push)
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
+        with:
+          context: .
+          push: false
+          load: true
+          tags: aegisflow:ci
+          build-args: |
+            VERSION=ci-${{ github.sha }}
+            COMMIT=${{ github.sha }}
+            BUILD_DATE=${{ steps.meta.outputs.build-date }}
+          cache-from: type=gha,scope=aegisflow
+          cache-to: type=gha,scope=aegisflow,mode=max
+
+      - name: Smoke test (read-only, no capabilities, non-root)
+        run: |
+          docker run -d --name aegisflow -p 127.0.0.1:8080:8080 \
+            --read-only --cap-drop ALL --security-opt no-new-privileges:true aegisflow:ci
+          for _ in $(seq 1 30); do
+            curl -fsS http://127.0.0.1:8080/healthz && break
+            sleep 1
+          done
+          echo
+          curl -fsS http://127.0.0.1:8080/readyz
+          curl -fsS http://127.0.0.1:8080/api/v1/version | tee version.json
+          grep -q "\"commit\":\"${GITHUB_SHA}\"" version.json
+          curl -fsS -D headers.txt -o index.html http://127.0.0.1:8080/
+          grep -qi '^content-security-policy: default-src' headers.txt
+          grep -q '<script type="module"' index.html
+          test "$(curl -s -o /dev/null -w '%{http_code}' http://127.0.0.1:8080/api/nope)" = 404
+          test "$(docker inspect -f '{{.Config.User}}' aegisflow)" = "65532:65532"
+          docker exec aegisflow /aegisflow -healthcheck
+
+      - name: Container logs
+        if: always()
+        run: docker logs aegisflow || true

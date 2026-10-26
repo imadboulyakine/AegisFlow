@@ -1,0 +1,38 @@
+# --- Build outputs ---
+/bin/
+/dist/
+coverage.out
+*.test
+*.prof
+
+# Frontend bundle copied into the Go embed directory; only the placeholder is tracked.
+/internal/webui/dist/*
+!/internal/webui/dist/.gitkeep
+
+# --- Frontend ---
+/web/node_modules/
+/web/dist/
+*.tsbuildinfo
+
+# --- Secrets & local environment (never commit) ---
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.pfx
+*.p12
+*.crt
+*.kubeconfig
+.azure/
+*.tfstate
+*.tfstate.*
+
+# --- Tooling / OS / editors ---
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.swp
+*~

@@ -1,0 +1,53 @@
+# golangci-lint v2 configuration (pinned version: see Makefile GOLANGCI_LINT_VERSION and ci.yml).
+version: "2"
+
+run:
+  timeout: 5m
+
+linters:
+  default: standard # errcheck, govet, ineffassign, staticcheck, unused
+  enable:
+    - bodyclose
+    - errname
+    - errorlint
+    - gocritic
+    - gosec
+    - intrange
+    - misspell
+    - modernize
+    - nilerr
+    - noctx
+    - perfsprint
+    - sloglint
+    - thelper
+    - tparallel
+    - unconvert
+    - usestdlibvars
+  settings:
+    gosec:
+      excludes:
+        - G104 # unhandled errors: covered by errcheck with explicit `_ =` assignments
+    sloglint:
+      kv-only: false
+      attr-only: false
+      no-global: all # always use an injected *slog.Logger
+  exclusions:
+    generated: strict
+    presets:
+      - std-error-handling
+    rules:
+      # Tests may use plain http.Get/net.Listen and unchecked bodies for brevity.
+      - path: _test\.go
+        linters:
+          - bodyclose
+          - gosec
+          - noctx
+
+formatters:
+  enable:
+    - gofmt
+    - goimports
+  settings:
+    goimports:
+      local-prefixes:
+        - github.com/imadboulyakine/aegisflow
