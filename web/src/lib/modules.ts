@@ -1,4 +1,5 @@
-// Catalogue of the platform modules shown on the dashboard. All are placeholders in Phase 0.
+// Catalogue of the platform modules shown on the dashboard. Vulnerabilities is live since Phase 2;
+// the others are placeholders.
 
 export type ModuleStatus = "planned" | "available";
 
@@ -23,7 +24,7 @@ export const modules: readonly PlatformModule[] = [
     path: "/vulnerabilities",
     title: "Vulnerabilities",
     summary: "Correlated SAST, SCA and DAST findings with risk-aware prioritisation.",
-    status: "planned",
+    status: "available",
   },
   {
     id: "policies",

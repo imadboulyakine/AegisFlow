@@ -7,6 +7,8 @@ import { BrandMark } from "./components/BrandMark";
 import { Link } from "./components/Link";
 import { ModuleCard } from "./components/ModuleCard";
 import { StatusCard } from "./components/StatusCard";
+import { FindingDetailPage, VulnerabilitiesPage } from "./components/Vulnerabilities";
+import { findingIdFromPath } from "./lib/findings";
 
 function useServiceStatus(fetcher: Fetcher) {
   const [snapshot, setSnapshot] = useState<StatusSnapshot | null>(null);
@@ -79,10 +81,13 @@ export interface AppProps {
 
 export function App({ fetcher = defaultFetcher, serverPath = "/" }: AppProps) {
   const pathname = usePathname(serverPath);
-  const module = findModule(pathname);
+  const findingId = findingIdFromPath(pathname);
+  const module = findingId !== null ? findModule("/vulnerabilities") : findModule(pathname);
 
   let page;
   if (pathname === "/") page = <Dashboard fetcher={fetcher} />;
+  else if (findingId !== null) page = <FindingDetailPage fetcher={fetcher} id={findingId} />;
+  else if (module?.id === "vulnerabilities") page = <VulnerabilitiesPage fetcher={fetcher} />;
   else if (module) page = <ModulePage module={module} />;
   else page = <NotFound pathname={pathname} />;
 
@@ -106,7 +111,7 @@ export function App({ fetcher = defaultFetcher, serverPath = "/" }: AppProps) {
         </nav>
       </header>
       <main className="content">{page}</main>
-      <footer className="footer">AegisFlow · DevSecOps &amp; software supply-chain security · Phase 0</footer>
+      <footer className="footer">AegisFlow · DevSecOps &amp; software supply-chain security · Phase 2</footer>
     </div>
   );
 }

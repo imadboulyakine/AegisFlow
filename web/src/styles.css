@@ -242,3 +242,164 @@ code {
   font-size: 0.85rem;
   text-align: center;
 }
+
+/* ---------- Vulnerabilities (Phase 2) ---------- */
+
+.badge-available {
+  background: var(--ok-bg);
+  color: var(--ok);
+}
+
+.tier {
+  display: inline-block;
+  min-width: 2.4rem;
+  padding: 0.1rem 0.45rem;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-align: center;
+  background: var(--neutral-bg);
+  color: var(--muted);
+}
+
+.tier-P1 {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.tier-P2 {
+  background: var(--warn-bg);
+  color: var(--warn);
+}
+
+.tier-none {
+  font-weight: 500;
+}
+
+.score {
+  margin-left: 0.5rem;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+}
+
+.score-large {
+  margin-left: 0;
+  margin-right: 0.4rem;
+  font-size: 1.6rem;
+}
+
+.filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 1rem 0;
+}
+
+.filters select {
+  margin-left: 0.25rem;
+  padding: 0.3rem 0.5rem;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.table-wrap {
+  overflow-x: auto;
+  margin: 0.75rem 0 1rem;
+}
+
+.findings-table,
+.factors-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+}
+
+.findings-table th,
+.findings-table td,
+.factors-table th,
+.factors-table td {
+  padding: 0.5rem 0.6rem;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+  vertical-align: top;
+}
+
+.findings-table thead th,
+.factors-table thead th {
+  color: var(--muted);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.risk-cell {
+  white-space: nowrap;
+}
+
+.purl {
+  overflow-wrap: anywhere;
+}
+
+.reason {
+  color: var(--muted);
+  min-width: 16rem;
+}
+
+.reason-line {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.points {
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.note {
+  color: var(--muted);
+}
+
+.flags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin: 0.75rem 0;
+  padding: 0;
+  list-style: none;
+}
+
+.flag {
+  padding: 0.1rem 0.5rem;
+  border-radius: 999px;
+  background: var(--neutral-bg);
+  color: var(--muted);
+  font-family: var(--mono);
+  font-size: 0.75rem;
+}
+
+.notice {
+  margin: 1rem 0;
+  padding: 0.85rem 1rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--neutral-bg);
+}
+
+.notice p {
+  margin: 0.35rem 0 0;
+}
+
+.notice-error {
+  background: var(--bad-bg);
+  color: var(--bad);
+}
+
+.empty {
+  margin: 1rem 0;
+  color: var(--muted);
+}

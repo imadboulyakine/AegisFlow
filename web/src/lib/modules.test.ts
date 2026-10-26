@@ -7,9 +7,9 @@ describe("modules", () => {
     expect(new Set(modules.map((m) => m.path)).size).toBe(modules.length);
   });
 
-  test("all Phase 0 modules are planned placeholders", () => {
+  test("only Vulnerabilities is available in Phase 2", () => {
     expect(modules.map((m) => m.title)).toEqual(["Supply Chain", "Vulnerabilities", "Policies", "Anomalies"]);
-    expect(modules.every((m) => m.status === "planned")).toBe(true);
+    expect(modules.filter((m) => m.status === "available").map((m) => m.id)).toEqual(["vulnerabilities"]);
   });
 });
 
