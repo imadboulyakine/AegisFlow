@@ -72,7 +72,7 @@ provenance-sbom: ## CycloneDX SBOM of bin/aegisflow (Go build info + bundled npm
 	rm -rf $(PROVENANCE_SBOM_INPUT) && mkdir -p $(PROVENANCE_SBOM_INPUT)/web
 	cp $(BINARY) $(PROVENANCE_SBOM_INPUT)/
 	cp web/package.json web/bun.lock $(PROVENANCE_SBOM_INPUT)/web/
-	$(DOCKER) run --rm --user "$$(id -u):$$(id -g)" --read-only --tmpfs /tmp:rw,size=1g \
+	$(DOCKER) run --rm --user "$$(id -u):$$(id -g)" --read-only --tmpfs /tmp:rw,size=1g,mode=1777 \
 		--cap-drop ALL --security-opt no-new-privileges:true --network none \
 		-e HOME=/tmp -e SYFT_CHECK_FOR_APP_UPDATE=false \
 		-v "$(abspath $(PROVENANCE_SBOM_INPUT)):/artifact:ro" $(PROVENANCE_SYFT_IMAGE) \

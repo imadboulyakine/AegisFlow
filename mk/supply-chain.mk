@@ -65,7 +65,7 @@ SC_OUT_ABS   = $(abspath $(SC_OUT))
 
 # Hardened `docker run` for the scanner images.
 SC_DOCKER_RUN = $(DOCKER) run --rm --user "$$(id -u):$$(id -g)" --read-only \
-	--tmpfs /tmp:rw,size=2g --cap-drop ALL --security-opt no-new-privileges:true -e HOME=/tmp
+	--tmpfs /tmp:rw,size=2g,mode=1777 --cap-drop ALL --security-opt no-new-privileges:true -e HOME=/tmp
 
 # $(call sc_syft,<extra docker run args>) — Syft never needs the network here.
 sc_syft = $(SC_DOCKER_RUN) --network none -e SYFT_CHECK_FOR_APP_UPDATE=false $(1) \

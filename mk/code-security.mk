@@ -48,7 +48,7 @@ ZIZMOR_FLAGS = --config $(ZIZMOR_CONFIG) --no-progress $(if $(filter 1,$(CS_ZIZM
 
 # Hardened, throwaway Semgrep container: read-only root FS, no capabilities, caller's uid (so
 # reports are not root-owned and git accepts the bind-mounted checkout), source mounted read-only.
-SEMGREP_RUN = $(DOCKER) run --rm --read-only --tmpfs /tmp --cap-drop ALL \
+SEMGREP_RUN = $(DOCKER) run --rm --read-only --tmpfs /tmp:rw,mode=1777 --cap-drop ALL \
 	--security-opt no-new-privileges:true --user "$$(id -u):$$(id -g)" \
 	--env HOME=/tmp --env SEMGREP_SEND_METRICS=off
 
