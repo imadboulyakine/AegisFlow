@@ -22,7 +22,7 @@ Last session: 2026-10-26 — Phase 0 bootstrap — branch `claude/serene-frankli
 
 ## 2. In progress / not verified yet
 
-- **First CI run on GitHub** for the Phase 0 PR — check it, fix anything red before merging.
+- First CI run on GitHub for the Phase 0 PR: **green** (Go, Web, Container; ≈ 4m35s). PR #1 awaits the owner's merge.
 - **Dependabot config** (`cooldown`, `bun`, `docker-compose` ecosystems) — check Insights →
   Dependency graph → Dependabot after merge.
 
@@ -41,7 +41,7 @@ Last session: 2026-10-26 — Phase 0 bootstrap — branch `claude/serene-frankli
 
 Each is a self-contained PR; parallelisable ones are marked ∥.
 
-1. Make the Phase 0 PR green on GitHub and merge it.
+1. Owner merges PR #1 (CI already green), then enables branch protection on `main`.
 2. ∥ **Workflow security**: add `actionlint` + `zizmor` jobs (pinned, checksum-verified).
 3. ∥ **Secrets**: gitleaks on PR diff + scheduled full-history scan; `.gitleaks.toml` allow-list
    for synthetic test fixtures only.

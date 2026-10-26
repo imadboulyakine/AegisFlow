@@ -10,7 +10,7 @@ Last updated: 2026-10-26 — Phase 0 (bootstrap) — branch `claude/serene-frank
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Bootstrap | **Done locally, PR open** — exit criterion "CI green on first push" pending the first GitHub run | See §3, §4 |
+| 0 Bootstrap | **Done — CI green on GitHub**, PR #1 awaiting owner merge | See §3, §4 |
 | 1 Secure CI foundation | Not started | Blocked on owner answers Q1–Q3 (DECISIONS.md) for signing mode |
 | 2–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
 
@@ -30,7 +30,7 @@ Nothing has been created in Azure. No Azure login was performed. No secrets are 
 | Bun native build with CSP guard (fails on inline script/style, `data:` CSS) | Done | `web/scripts/build.ts` |
 | Distroless Debian 13 nonroot image, digest-pinned bases, self-probing HEALTHCHECK | Done | `Dockerfile` (ADR-005) |
 | Local stack (app hardened; Postgres behind `db` profile for Phase 2) | Done | `compose.yaml` |
-| CI: go / web / container jobs, SHA-pinned actions, read-only token | Done, **not yet run on GitHub** | `.github/workflows/ci.yml` (ADR-006) |
+| CI: go / web / container jobs, SHA-pinned actions, read-only token | Done, **green on GitHub** (run 40359255309) | `.github/workflows/ci.yml` (ADR-006) |
 | Dependabot (gomod, bun, actions, docker, docker-compose; 3-day cooldown) | Done, **unverified on GitHub** | `.github/dependabot.yml` |
 | CODEOWNERS, PR template | Done | `.github/` |
 | Project memory docs | Done | `CLAUDE.md`, `AGENTS.md`, `docs/*` |
@@ -53,7 +53,7 @@ All run by the lead session after integrating subagent work, unless noted.
 | govulncheck | `make vuln` | **BLOCKED here** (vuln.go.dev 403). Offline run against a DB built from the OSV export: *No vulnerabilities found* (bootstrap agent). Runs online in CI. |
 | Go hygiene | `go mod tidy -diff`, `go fix -diff ./...` | **TESTED PASS** (bootstrap agent) |
 | Secrets in diff | grep of staged diff for key/secret/token patterns | **TESTED PASS** — only synthetic test fixtures |
-| CI on GitHub | first PR run | **PENDING** |
+| CI on GitHub | PR #1, run 40359255309, head `75dc366` | **PASS** — Go 3m24s (incl. golangci-lint build, live govulncheck), Web 19s, Container build + smoke 1m07s; ≈ 4m35s wall-clock (first data point for E4) |
 
 ## 4. Environment capabilities (Claude Code cloud container, audited 2026-10-26)
 
@@ -90,7 +90,7 @@ feed clients and the provenance verifier with recorded fixtures so they are test
 | B2 | Repository is private: no artifact attestations, CodeQL, dependency review, push protection; Actions minutes capped | Phase 1 tooling choice | Answer Q1–Q3 (ADR-014) |
 | B3 | Azure retail prices could not be pulled (prices.azure.com blocked) | AZURE_COSTS.md values are estimates | Re-verify before Phase 4 (queries listed in AZURE_COSTS.md §1) |
 | B4 | Branch protection / rulesets not configured on `main` | Direct pushes possible | Owner: enable after Phase 0 merge (plan-dependent) |
-| B5 | CI and Dependabot config not yet validated on GitHub | Possible first-run failures | Watch the first PR run |
+| B5 | Dependabot config (`cooldown`, `bun`, `docker-compose`) not yet validated on GitHub | Update PRs may not appear | Check Insights → Dependency graph → Dependabot after merge |
 
 ## 6. How to work in the cloud container
 
