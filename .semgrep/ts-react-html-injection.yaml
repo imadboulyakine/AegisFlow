@@ -1,0 +1,23 @@
+rules:
+  - id: ts-react-html-injection
+    message: >-
+      Raw HTML injection sink. The dashboard renders scanner output (package names, CVE text,
+      commit messages) that attackers can influence; let React escape it. If rich text is ever
+      required, add a reviewed sanitiser and Trusted Types first (see docs/SECURITY_MODEL.md).
+    severity: ERROR
+    languages: [typescript, javascript]
+    metadata:
+      category: security
+      cwe: ["CWE-79: Improper Neutralization of Input During Web Page Generation"]
+      references:
+        - https://react.dev/reference/react-dom/components/common#dangerously-setting-the-inner-html
+    pattern-either:
+      - pattern: <$EL dangerouslySetInnerHTML={...} />
+      - pattern: <$EL dangerouslySetInnerHTML={...}>...</$EL>
+      - pattern: "{dangerouslySetInnerHTML: ...}"
+      - pattern: $NODE.innerHTML = $HTML
+      - pattern: $NODE.outerHTML = $HTML
+      - pattern: $NODE.insertAdjacentHTML(...)
+      - pattern: document.write(...)
+      - pattern: document.writeln(...)
+      - pattern: $RANGE.createContextualFragment(...)

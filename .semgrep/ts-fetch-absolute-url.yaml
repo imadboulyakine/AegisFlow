@@ -1,0 +1,33 @@
+rules:
+  - id: ts-fetch-absolute-url
+    message: >-
+      Network request to an absolute URL from the dashboard. The SPA must talk only to its own
+      origin through the typed client in web/src/lib/api.ts; the server's CSP (`default-src 'self'`)
+      blocks cross-origin requests at runtime, so this is either a bug or an attempt to send data
+      off-origin.
+    severity: WARNING
+    languages: [typescript, javascript]
+    paths:
+      include:
+        - /web/src/
+    metadata:
+      category: security
+      cwe: ["CWE-201: Insertion of Sensitive Information Into Sent Data"]
+    patterns:
+      - pattern-either:
+          - pattern: fetch($URL, ...)
+          - pattern: $GLOBAL.fetch($URL, ...)
+          - pattern: new WebSocket($URL, ...)
+          - pattern: new EventSource($URL, ...)
+          - pattern: navigator.sendBeacon($URL, ...)
+          - pattern: new Request($URL, ...)
+      - metavariable-pattern:
+          metavariable: $URL
+          patterns:
+            - pattern-either:
+                - pattern: '"$S"'
+                - pattern: "`$S`"
+                - pattern: new URL("$S", ...)
+            - metavariable-regex:
+                metavariable: $S
+                regex: ^(?i)(https?|wss?):|^//

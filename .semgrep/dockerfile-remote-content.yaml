@@ -1,0 +1,29 @@
+rules:
+  - id: dockerfile-unverified-remote-content
+    message: >-
+      Image build pulls remote content without an integrity check (ADD <url>, or a download piped
+      into a shell). Fetch build inputs through a pinned package manager or a digest-pinned image,
+      or use `ADD --checksum=sha256:<hash> <url>` (ADR-015: never `curl | sh`).
+    severity: ERROR
+    languages: [dockerfile]
+    metadata:
+      category: security
+      cwe: ["CWE-494: Download of Code Without Integrity Check"]
+    pattern-either:
+      - patterns:
+          - pattern: ADD $SRC $DEST
+          - pattern-not: ADD --checksum=$SUM $SRC $DEST
+          - metavariable-regex:
+              metavariable: $SRC
+              regex: ^(?i)(https?|ftp)://|^git@
+      - patterns:
+          - pattern-either:
+              - pattern: RUN $DL ... | $SH ...
+              - pattern: RUN $DL ... | sudo $SH ...
+              - pattern: RUN $DL ... | env $ENV $SH ...
+          - metavariable-regex:
+              metavariable: $DL
+              regex: ^(curl|wget)$
+          - metavariable-regex:
+              metavariable: $SH
+              regex: ^(/usr)?(/bin/)?(ba|da|z|k)?sh$

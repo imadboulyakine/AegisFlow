@@ -27,6 +27,8 @@ LDFLAGS := -s -w \
 
 # Pinned tool versions (bump deliberately; keep in sync with .github/workflows/ci.yml).
 GOVULNCHECK_VERSION   ?= v1.9.0
+# Extra govulncheck flags, e.g. offline: GOVULNCHECK_FLAGS='-db file:///path/to/govulndb'.
+GOVULNCHECK_FLAGS     ?=
 GOLANGCI_LINT_VERSION ?= v2.15.0
 ACTIONLINT_VERSION    ?= v1.7.12
 
@@ -91,7 +93,7 @@ golangci-lint: ## Run golangci-lint (pinned; built with the project toolchain)
 
 .PHONY: vuln
 vuln: ## Scan Go code and stdlib for known vulnerabilities (govulncheck)
-	$(GO_TOOL) run golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION) ./...
+	$(GO_TOOL) run golang.org/x/vuln/cmd/govulncheck@$(GOVULNCHECK_VERSION) $(GOVULNCHECK_FLAGS) ./...
 
 .PHONY: actionlint
 actionlint: ## Lint GitHub Actions workflows (pinned actionlint)
@@ -126,6 +128,11 @@ docker-build: ## Build the container image (IMAGE, default aegisflow:dev)
 docker-run: ## Run the image read-only, unprivileged, on :8080
 	$(DOCKER) run --rm -it -p 8080:8080 --read-only --cap-drop ALL \
 		--security-opt no-new-privileges:true $(IMAGE)
+
+## ---------- Security scanning (Phase 1, see mk/*.mk) ----------
+
+# Each security area owns one fragment in mk/ (code-security.mk, supply-chain.mk, ...).
+-include $(sort $(wildcard mk/*.mk))
 
 ## ---------- Housekeeping ----------
 

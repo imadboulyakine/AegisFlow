@@ -1,0 +1,20 @@
+rules:
+  - id: dockerfile-base-image-not-digest-pinned
+    message: >-
+      Base image is not pinned by digest. Tags are mutable (see the 2026 Trivy image/tag hijack in
+      ADR-015); AegisFlow pins every FROM as `name:tag@sha256:<digest>` so builds are reproducible
+      and Dependabot proposes digest bumps as reviewable PRs (ADR-005).
+    severity: ERROR
+    languages: [dockerfile]
+    metadata:
+      category: security
+      cwe: ["CWE-494: Download of Code Without Integrity Check"]
+    patterns:
+      - pattern: FROM $IMAGE
+      - pattern-not: FROM $IMAGE@$DIGEST
+      - pattern-not: FROM scratch
+      # A stage built FROM an earlier stage's name has nothing to pin.
+      - pattern-not-inside: |
+          FROM $BASE AS $IMAGE
+          ...
+          FROM $IMAGE

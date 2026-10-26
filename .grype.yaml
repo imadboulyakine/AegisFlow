@@ -1,0 +1,39 @@
+# Grype configuration — used by `make grype` (mk/supply-chain.mk) and the `sbom-and-image-scan`
+# job of .github/workflows/supply-chain.yml.
+#
+# Input: the Syft-native SBOM of the container image (sbom-image.syft.json), published as evidence
+# next to its CycloneDX/SPDX renderings from the same scan. The native format is lossless and
+# carries the Go functions linked into the binary, so Go advisories match at function level.
+#
+# Gate (flags in mk/supply-chain.mk, GRYPE_FAIL_ON=high):
+#     grype sbom:sbom-image.syft.json --only-fixed --fail-on high
+#   fails (exit 2) when at least one match that is not ignored below has
+#     severity High or Critical  AND  fix state "fixed" (the DB knows a fixed version).
+#   Matches without a fix (not-fixed / wont-fix / unknown) and Medium, Low, Negligible or Unknown
+#   severities do not fail the build. They are still in the evidence run (grype-image.json and
+#   .sarif, step summary), which uses no gate flags.
+#   Severity is Grype's normalised value: the distro's rating for OS packages (Debian security
+#   tracker), otherwise the advisory's (GHSA/NVD CVSS). Both runs use the same DB.
+#
+# Exceptions: none today. Prefer an OpenVEX statement under .github/vex/ (status not_affected +
+# justification) once VEX input is wired in. A plain ignore rule below needs `vulnerability`, the
+# narrowest `package` match and a `reason`. Grype rules cannot expire, so the reason must end with
+# "review-by YYYY-MM-DD" (at most 90 days ahead).
+#   - vulnerability: CVE-YYYY-NNNNN
+#     package: { name: example, type: deb }
+#     reason: "Not reachable: … Owner: @imadboulyakine. review-by 2027-01-31"
+
+check-for-app-update: false
+
+db:
+  auto-update: true
+  # In CI, a failed update check must not silently fall back to a stale cached DB.
+  require-update-check: true
+  # Refuse to scan with a DB older than 5 days (the Grype default, stated explicitly).
+  validate-age: true
+  max-allowed-built-age: 120h
+
+# Report every match; the gate flags above decide pass/fail.
+only-fixed: false
+
+ignore: []

@@ -1,0 +1,21 @@
+# zizmor configuration (https://docs.zizmor.sh/configuration/). Used by `make zizmor` and the
+# code-security workflow via --config. Gate thresholds live in mk/code-security.mk.
+rules:
+  # ADR-006: every action is pinned to a full commit SHA, including actions/* and github/*
+  # (zizmor's default policy would accept tag pins for those two owners).
+  unpinned-uses:
+    config:
+      policies:
+        "*": hash-pin
+
+  # ADR-015: actions whose tags were hijacked in real supply-chain attacks are banned outright,
+  # even when SHA-pinned; install the underlying tools as pinned, verified binaries instead.
+  forbidden-uses:
+    config:
+      deny:
+        - tj-actions/* # tj-actions/changed-files tag hijack (CVE-2025-30066)
+        - reviewdog/* # reviewdog/action-setup compromise (CVE-2025-30154)
+        - aquasecurity/trivy-action # 76/77 tags replaced (GHSA-69fq-xp46-6x23, CVE-2026-33634)
+        - aquasecurity/setup-trivy # precaution: same publisher and incident window
+        - xygeni/xygeni-action # CVE-2026-31976
+        - actions-cool/* # 2026 tag hijack

@@ -1,6 +1,7 @@
 # Dependabot version updates (ADR-006). Weekly, minor/patch grouped per ecosystem to keep
 # PR noise (and private-repo Actions minutes) low; majors arrive as individual PRs.
-# `cooldown` skips releases younger than 3 days, mirroring web/bunfig.toml minimumReleaseAge.
+# `cooldown` skips version-update releases younger than 7 days (zizmor's default; security updates
+# are not delayed). Bun's install-time minimumReleaseAge (web/bunfig.toml) stays at 3 days.
 version: 2
 
 updates:
@@ -10,7 +11,7 @@ updates:
       interval: weekly
       day: monday
     cooldown:
-      default-days: 3
+      default-days: 7
     groups:
       go-minor-patch:
         update-types: [minor, patch]
@@ -24,7 +25,7 @@ updates:
       interval: weekly
       day: monday
     cooldown:
-      default-days: 3
+      default-days: 7
     groups:
       web-minor-patch:
         update-types: [minor, patch]
@@ -38,7 +39,7 @@ updates:
       interval: weekly
       day: monday
     cooldown:
-      default-days: 3
+      default-days: 7
     groups:
       actions-minor-patch:
         update-types: [minor, patch]
@@ -52,7 +53,7 @@ updates:
       interval: weekly
       day: monday
     cooldown:
-      default-days: 3
+      default-days: 7
     groups:
       docker-minor-patch:
         update-types: [minor, patch]
@@ -66,10 +67,25 @@ updates:
       interval: weekly
       day: monday
     cooldown:
-      default-days: 3
+      default-days: 7
     groups:
       compose-minor-patch:
         update-types: [minor, patch]
     commit-message:
       prefix: "deps(compose)"
     labels: [dependencies, docker]
+
+  # Hash-pinned Python tool requirements for CI (zizmor), installed with --require-hashes.
+  - package-ecosystem: pip
+    directory: /.github/requirements
+    schedule:
+      interval: weekly
+      day: monday
+    cooldown:
+      default-days: 7
+    groups:
+      ci-tools-minor-patch:
+        update-types: [minor, patch]
+    commit-message:
+      prefix: "deps(ci)"
+    labels: [dependencies, ci]

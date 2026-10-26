@@ -1,0 +1,19 @@
+# Test cases for gha-privileged-trigger (run: make sast-test). Not a real workflow.
+name: privileged-trigger-fixture
+on:
+  # ok: gha-privileged-trigger
+  pull_request:
+  # ruleid: gha-privileged-trigger
+  pull_request_target:
+    types: [opened]
+  # ruleid: gha-privileged-trigger
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+  push:
+    branches: [main]
+jobs:
+  noop:
+    runs-on: ubuntu-24.04
+    steps:
+      - run: "true"

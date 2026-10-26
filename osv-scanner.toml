@@ -1,0 +1,27 @@
+# osv-scanner configuration — used by `make osv` and the `deps` job of
+# .github/workflows/supply-chain.yml (passed explicitly with --config, so it applies to
+# go.mod and web/bun.lock alike).
+#
+# Gate: the scan FAILS on ANY known vulnerability (any severity, fixed or not) in the
+# scanned lockfiles, unless the advisory is listed below.
+#
+# Exception policy (enforced by `make osv`: every entry needs all three keys):
+#   id          — the OSV/GHSA/GO/CVE id exactly as reported
+#   reason      — why it is not exploitable here, or the compensating control, and who decided
+#   ignoreUntil — expiry date, at most 90 days ahead; after it the finding fails the gate again
+# Prefer fixing (upgrade, remove the dependency) over ignoring. Review open entries monthly.
+
+# go.mod has `toolchain go1.27.3`, which is the toolchain CI (actions/setup-go with
+# go-version-file) and the Dockerfile (golang:1.27.3) really build with. osv-scalibr reads the
+# stdlib version from the toolchain directive in preference to the `go` (minimum language
+# version) line, so checking it is accurate here. osv-scanner skips the go.mod stdlib by default
+# to avoid false positives from the `go` line; we opt in so stdlib advisories fail this gate
+# until the toolchain is bumped. govulncheck adds reachability; Grype checks the stdlib that was
+# actually linked into the image.
+ScanGoModVersion = true
+
+# Example (keep commented out unless needed):
+# [[IgnoredVulns]]
+# id = "GHSA-xxxx-xxxx-xxxx"
+# ignoreUntil = 2027-01-31
+# reason = "Dev-only dependency (typescript); not shipped in the binary. Owner: @imadboulyakine"

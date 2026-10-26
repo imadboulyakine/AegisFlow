@@ -4,17 +4,19 @@ Authoritative record of what exists, what was verified (command + result) and wh
 Update it in every PR that changes behaviour. Tested facts are marked **TESTED**; everything else
 is an **ASSUMPTION** or **PLANNED**.
 
-Last updated: 2026-10-26 — Phase 0 (bootstrap) — branch `claude/serene-franklin-lipl1f`
+Last updated: 2026-10-26 — Phase 1 (secure CI foundation) — branch `claude/serene-franklin-lipl1f`
 
 ## 1. Phase status
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Bootstrap | **Done — CI green on GitHub**, PR #1 awaiting owner merge | See §3, §4 |
-| 1 Secure CI foundation | Not started | Blocked on owner answers Q1–Q3 (DECISIONS.md) for signing mode |
-| 2–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
+| 0 Bootstrap | **Done — merged** (PR #1, `8b7eb63`) | See §3, §4 |
+| 1 Secure CI foundation | **Implemented, PR #2 open** — public-only jobs (CodeQL, SARIF upload, signing, attestations) wait for the visibility switch | See §2.1, §3.1 |
+| 2 Ingestion + risk | **In progress** — 4 core packages built in parallel worktrees (OIDC verifier, normalizers, risk/intel, Postgres store); integration + PR #3 next | See SESSION_HANDOFF |
+| 3–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
 
-Nothing has been created in Azure. No Azure login was performed. No secrets are committed.
+Nothing has been created in Azure. Read-only Azure discovery was run on 2026-10-26 with the
+owner-authorised service principal (ADR-017; `scripts/azure/discover.py`). No secrets are committed.
 
 ## 2. Implementation status (Phase 0)
 
@@ -35,6 +37,33 @@ Nothing has been created in Azure. No Azure login was performed. No secrets are 
 | CODEOWNERS, PR template | Done | `.github/` |
 | Project memory docs | Done | `CLAUDE.md`, `AGENTS.md`, `docs/*` |
 | Bicep / `infra/` | Not started (Phase 4) | — |
+
+## 2.1 Implementation status (Phase 1)
+
+| Component | Status | Where |
+|---|---|---|
+| Secrets (gitleaks v8.30.1), SAST (Semgrep 1.182.0, 10 repo rules + registry packs), workflow security (zizmor 1.31.1, actionlint) | Done | `.github/workflows/code-security.yml`, `mk/code-security.mk`, `.gitleaks.toml`, `.semgrep/`, `.github/zizmor.yml` |
+| Go vulns (govulncheck + JSON/OpenVEX evidence), deps (osv-scanner v2.7.0 on go.mod + bun.lock), SBOMs (Syft v1.55.0, CycloneDX + SPDX), image scan (Grype v0.121.0) | Done | `.github/workflows/supply-chain.yml`, `mk/supply-chain.mk`, `.grype.yaml`, `osv-scanner.toml` |
+| CodeQL (Go, JS/TS, Actions) + dependency review | Done, **public-only** | `.github/workflows/github-security.yml` |
+| Keyless cosign + `actions/attest` SLSA provenance + SBOM attestation for the binary; reproducible build | Done, **public + main only** | `.github/workflows/provenance.yml`, `mk/provenance.mk`, `docs/VERIFY.md` |
+| Experiments E1 (secrets benchmark), E4 (overhead collector), E3 (tamper catalogue) | Done | `experiments/`, `mk/experiments.mk` |
+| SECURITY.md, Apache-2.0 LICENSE | Done | repo root |
+| Ruleset on `main` | **Owner action** after PR #2 shows the check names | — |
+
+## 3.1 Checks executed in Phase 1 (2026-10-26, cloud container)
+
+| Check | Result |
+|---|---|
+| `make lint` (gofmt, vet, golangci-lint v2.15.0, tsc) | **TESTED PASS** — 0 issues |
+| `make test` | **TESTED PASS** — bun 56/56; Go `-race` all packages, total 90.0 % (experiments e1 87.5 %, e4 92.1 %) |
+| `make actionlint`, zizmor `--persona pedantic` on all workflows + dependabot | **TESTED PASS** — 0 findings |
+| `make sast-test` / `make sast` | **TESTED PASS** — 10/10 rule tests; 0 blocking findings |
+| `make secrets` (full history, all refs) + gitleaks dir on new files | **TESTED PASS** — 0 findings (one synthetic fixture allow-listed narrowly) |
+| `make vuln` with offline OSV-derived DB | **TESTED PASS** — no vulnerabilities |
+| `make osv` (offline DB), `make sbom` | **TESTED PASS** (supply-chain agent) — bun.lock parsed (31 packages) |
+| Grype matching, osv/govulncheck live DBs, Semgrep registry, zizmor online audits, SARIF upload, CodeQL, Sigstore/attestations | **CI-ONLY** (blocked here) |
+| Reproducible build (two clean clones) | **TESTED PASS** (provenance agent) — identical sha256 |
+| `make e1` (seed 20261026) | **TESTED** — full history recall 0.74 / precision 0.97 (target recall ≥ 0.90 **not met**; misses: split-line secrets, PostgreSQL URIs, base64-wrapped key) |
 
 ## 3. Checks executed in Phase 0 (2026-10-26, cloud container)
 
@@ -69,7 +98,7 @@ Full audit with commands and evidence was produced in-session; key results:
 | arm64 emulation (QEMU) | NOT AVAILABLE | multi-arch only via cross-compile or CI |
 | Azure CLI | NOT INSTALLED, installable | `pip install azure-cli` (2.91.0) in a venv works; **no login by design** |
 | Bicep | installable | 0.48.1 binary from GitHub releases builds/lints; `az bicep install` blocked |
-| Azure authentication | **POSSIBLE BUT NOT USED** | see §5 blocker B1 |
+| Azure authentication | **TESTED OK (read-only)** | owner-authorised SP (ADR-017); token + ARM GETs work; see §4.1 |
 | GitHub | MCP tools work for `imadboulyakine/AegisFlow` only (admin); `gh` CLI unauthenticated; `git ls-remote`/release downloads of public repos OK | |
 | Security tools | gitleaks, syft, trivy (DB via mirror.gcr.io), gosec, staticcheck, semgrep (local rules) OK; osv-scanner/govulncheck offline only; grype DB blocked; cosign key-based only (keyless/Sigstore blocked) | installable to scratch dirs, checksums verified |
 | Playwright | TESTED OK with `@playwright/test@1.63.0` (matches `/opt/pw-browsers` Chromium) | 1.64.x cannot find a browser; `playwright install` blocked |
@@ -82,12 +111,27 @@ Full audit with commands and evidence was produced in-session; key results:
 needs live vulnerability feeds, Sigstore keyless, GitHub OIDC or Azure runs **in CI only**. Design
 feed clients and the provenance verifier with recorded fixtures so they are testable offline.
 
+### 4.1 Azure subscription facts (read-only, 2026-10-26)
+
+| Fact | Value |
+|---|---|
+| Offer | Azure free account (`quotaId FreeTrial_2014-09-01`), spending limit **on**, state Enabled |
+| SP role | Contributor @ subscription (cannot create role assignments) |
+| Policies | ASC Default + Microsoft mandatory-MFA policies for user write/delete; **no allowed-locations policy** |
+| Region | francecentral offers `Microsoft.App/managedEnvironments` → ADR-013 Accepted |
+| Providers | Microsoft.App, ContainerRegistry, KeyVault, OperationalInsights, Insights, ManagedIdentity, DBforPostgreSQL **NotRegistered** (register in Phase 4) |
+| Existing resources | 6 RGs / 26 resources, none AegisFlow (owner's labs; VMs deallocated) |
+| Spend | Sept 2026 $0.00; Oct 2026 MTD $37.49 (lab RGs) |
+| Budgets | none; Defender: Foundational CSPM (free) + "Discovery" on Standard tier |
+
 ## 5. Blockers and risks
 
 | ID | Blocker / risk | Impact | Owner action |
 |---|---|---|---|
-| B1 | **Azure service-principal credentials are present as environment variables in the cloud environment** (`AZURE_CLIENT_ID`, `AZURE_TENANT_ID`, `AZURE_SUBSCRIPTION_ID`, `AZURE_CLIENT_SECRET` — names/shape only checked, values never printed or used). Any Azure SDK `DefaultAzureCredential` in the container would authenticate silently. | Contradicts ADR-008 (OIDC only, no long-lived secrets); blast radius unknown | Decide: remove them from the Claude Code environment settings, or keep them only if scoped to least privilege (e.g. Reader on one resource group) and rotate. Agents must run any `az` command with these variables unset. |
-| B2 | Repository is private: no artifact attestations, CodeQL, dependency review, push protection; Actions minutes capped | Phase 1 tooling choice | Answer Q1–Q3 (ADR-014) |
+| B1 | Azure SP in the session environment has **Contributor on the whole subscription** | **Accepted risk** by the owner (ADR-017); sessions may use it read-only, writes only after Phase 4 approval and only in AegisFlow RGs | Recommended before Phase 4: scope SP to the AegisFlow RG, rotate the secret |
+| B6 | Current subscription is a **free trial** (credit valid 30 days from sign-up); the owner's other labs bill ~$40+/month while idle (NAT gateway, Standard public IPs) | Phase 4 will use a new **Azure for Students** subscription (ADR-018); the ADR-017 SP does not reach it | Owner: create the Students subscription before Phase 4; optionally clean up idle lab networking |
+| B7 | Repository is still **private**; owner chose to make it public now (ADR-014) | CodeQL, dependency review, SARIF uploads and attestations stay skipped until then | Owner: Settings → General → Change visibility → Public, then the checklist in SESSION_HANDOFF §3 |
+| B2 | ~~Private-repo feature gaps~~ | Resolved by ADR-014 (public now) once the owner flips visibility — see B7 | — |
 | B3 | Azure retail prices could not be pulled (prices.azure.com blocked) | AZURE_COSTS.md values are estimates | Re-verify before Phase 4 (queries listed in AZURE_COSTS.md §1) |
 | B4 | Branch protection / rulesets not configured on `main` | Direct pushes possible | Owner: enable after Phase 0 merge (plan-dependent) |
 | B5 | Dependabot config (`cooldown`, `bun`, `docker-compose`) not yet validated on GitHub | Update PRs may not appear | Check Insights → Dependency graph → Dependabot after merge |

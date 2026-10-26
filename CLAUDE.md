@@ -31,10 +31,12 @@ These were verified in a Claude Code cloud container; re-verify if a command fai
 - Outbound HTTPS goes through an egress proxy (CA bundle `/root/.ccr/ca-bundle.crt`, details in
   `/root/.ccr/README.md`). Some hosts are blocked (e.g. `go.dev` returned 403). See
   `docs/PROJECT_STATE.md` → "Environment capabilities" for the full tested matrix.
-- **Azure**: no `az` login, ever. As of 2026-10-26 the cloud environment exposes `AZURE_*`
-  service-principal variables (blocker B1 in `docs/PROJECT_STATE.md`); never use them and run any
-  Azure tooling with them unset. Bicep can be compiled/linted locally (0.48.1 binary), nothing is
-  deployed from agent sessions.
+- **Azure**: the environment exposes an owner-authorised service principal (`AZURE_*`, Contributor on
+  the subscription — ADR-017). Read-only Resource Manager queries work (token from
+  `login.microsoftonline.com`, then `management.azure.com`); the scripted approach used on 2026-10-26
+  builds the token request in-process so the secret never appears in argv or output. Nothing is
+  deployed before the Phase 4 approval. Bicep compiles/lints locally (0.48.1 binary from GitHub
+  releases); `az` installs via pip in a venv.
 - Blocked egress (403): vuln.go.dev, OSV API, Grype DB, NVD, EPSS, cisa.gov, Sigstore, GitHub OIDC
   token endpoint, prices.azure.com, semgrep.dev, Playwright CDN. Use offline fixtures locally; live
   checks run in CI. Workarounds (govulncheck offline DB, Docker mirror, proxy CA inside

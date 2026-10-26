@@ -67,10 +67,23 @@ case) because the order of application could not be verified — both bounds are
 | Optional Front Door Standard | — | +$8 (one week, hourly) | +$35–40 |
 | Optional Defender (KV + OSS DB + CSPM) | — | — | +$20–25 [E] |
 
-Budget context: Azure for Students advertises **$100 credit for 12 months, no credit card**, renewable
-while a student [V, official page via search extract] (A1). That covers ~9–16 months of scenario (a),
-~4 demo months, but only ~1.5–2 months of scenario (c). **Default operating mode: (a), with (b) bursts
-around reviews/defence.**
+Budget context — **verified subscription facts (read-only ARM queries, 2026-10-26)**: the owner's
+subscription is an Azure **free account** (`quotaId FreeTrial_2014-09-01`, spending limit on), *not*
+Azure for Students. The free trial's credit ($200, per the free-account offer [E]) is valid for 30 days
+from sign-up; actual cost was $0 in September and **$37.49 month-to-date in October**, all in the
+owner's unrelated lab resource groups. Those labs keep billing while idle: a Standard NAT gateway
+(~$32/month + data [E]) and three Standard public IPs (~$3.65/month each [E]); their VMs are
+deallocated and the Bastion host is the free Developer SKU. Consequences for AegisFlow:
+- Phase 4 (weeks away) will run **after the trial credit expires**. **Owner decision (ADR-018)**: Phase 4
+  deploys into a new **Azure for Students** subscription ($100 credit / 12 months, no card [V via A1]);
+  its allowed-regions policy must be checked when it exists. Whether the PostgreSQL 12-month free offer
+  applies to Students subscriptions is still unverified.
+- A **$50/month budget** on the AegisFlow resource group (owner choice, Q7; alerts at 50/80/100 % actual
+  and 100 % forecast) is the first Phase 4 resource. The idle target remains scenario (a).
+- Recommend the owner deletes or stops idle lab networking (NAT gateway, public IPs) to preserve credit.
+
+Azure for Students advertises $100 credit for 12 months (A1): that covers ~9–16 months of scenario (a),
+~4 demo months, or ~1.5–2 months of scenario (c). **Default operating mode: scenario (a), with (b) bursts around reviews/defence.**
 
 GitHub side (not Azure, but billable): if the repo stays private, Actions minutes beyond 2,000 (Free) /
 3,000 (Pro) per month cost $0.006/min (Linux 2-core x64), and usage is **blocked** when no payment
