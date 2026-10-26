@@ -101,8 +101,9 @@ feed clients and the provenance verifier with recorded fixtures so they are test
 | ID | Blocker / risk | Impact | Owner action |
 |---|---|---|---|
 | B1 | Azure SP in the session environment has **Contributor on the whole subscription** | **Accepted risk** by the owner (ADR-017); sessions may use it read-only, writes only after Phase 4 approval and only in AegisFlow RGs | Recommended before Phase 4: scope SP to the AegisFlow RG, rotate the secret |
-| B6 | Subscription is a **free trial** (credit valid 30 days from sign-up) and the owner's other labs bill ~$40+/month while idle (NAT gateway, Standard public IPs) | Phase 4 likely needs a pay-as-you-go upgrade | Owner: check credit/expiry in the portal; clean up idle lab networking |
-| B2 | Repository is private: no artifact attestations, CodeQL, dependency review, push protection; Actions minutes capped | Phase 1 tooling choice | Answer Q1–Q3 (ADR-014) |
+| B6 | Current subscription is a **free trial** (credit valid 30 days from sign-up); the owner's other labs bill ~$40+/month while idle (NAT gateway, Standard public IPs) | Phase 4 will use a new **Azure for Students** subscription (ADR-018); the ADR-017 SP does not reach it | Owner: create the Students subscription before Phase 4; optionally clean up idle lab networking |
+| B7 | Repository is still **private**; owner chose to make it public now (ADR-014) | CodeQL, dependency review, SARIF uploads and attestations stay skipped until then | Owner: Settings → General → Change visibility → Public, then the checklist in SESSION_HANDOFF §3 |
+| B2 | ~~Private-repo feature gaps~~ | Resolved by ADR-014 (public now) once the owner flips visibility — see B7 | — |
 | B3 | Azure retail prices could not be pulled (prices.azure.com blocked) | AZURE_COSTS.md values are estimates | Re-verify before Phase 4 (queries listed in AZURE_COSTS.md §1) |
 | B4 | Branch protection / rulesets not configured on `main` | Direct pushes possible | Owner: enable after Phase 0 merge (plan-dependent) |
 | B5 | Dependabot config (`cooldown`, `bun`, `docker-compose`) not yet validated on GitHub | Update PRs may not appear | Check Insights → Dependency graph → Dependabot after merge |

@@ -51,10 +51,17 @@ flowchart LR
   provenance (GitHub attestations if public, else in-house in-toto predicate + `cosign attest`);
   `concurrency`, `timeout-minutes`, path filters, `retention-days: 7`; ruleset on `main` (plan-dependent);
   fixture repo `testdata/` skeletons for experiments E1–E3.
+- **Plan after the owner decisions of 2026-10-26** (repo public now, Pro plan, keyless after public):
+  - **1a** (in progress): `code-security.yml` (gitleaks, Semgrep, actionlint, zizmor) and
+    `supply-chain.yml` (govulncheck + OpenVEX, osv-scanner, Syft SBOMs, Grype), SARIF uploads gated on
+    public visibility; `github-security.yml` (CodeQL for Go, JS/TS and Actions; dependency review).
+  - **1b**: keyless cosign + `actions/attest` build provenance and SBOM attestations for the binary and
+    SBOMs; image signing needs a registry push (GHCR) — **ask the owner before publishing images**.
+  - **1c**: ruleset on `main` (required checks, no force-push), experiment fixtures (E1–E3), E4 baseline.
 - **Exit criteria**: every push to `main` yields SBOM + scan + signature + provenance for the image
   digest, all retrievable and verifiable with a documented command (`cosign verify-attestation …` or
   `gh attestation verify …`); a seeded secret in a PR fails CI; pipeline overhead measured (E4 baseline);
-  ADR-014 decided.
+  ADR-014 decided (done: public now).
 
 ## Phase 2 — Evidence ingestion, Postgres, correlation and risk scoring
 

@@ -23,10 +23,11 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 | 011 | Policy engine: CEL (`cel.dev/cel-go`) over OPA/Rego | Proposed |
 | 012 | Risk scoring formula | Proposed |
 | 013 | Azure region: francecentral | Accepted |
-| 014 | Repository visibility: private now, public at end of Phase 1 | Accepted |
+| 014 | Repository visibility: public now; Apache-2.0 | Accepted |
 | 015 | Scanner and signing tool pinning after 2025–2026 action compromises | Accepted |
 | 016 | Authentication: GitHub OIDC for CI ingestion, Entra ID for the dashboard | Proposed |
 | 017 | Agent sessions may use the owner's Azure service principal (accepted risk) | Accepted |
+| 018 | Phase 4 hosting: Azure for Students subscription, $50/month budget, UAMI + OIDC | Accepted |
 
 ---
 
@@ -178,7 +179,8 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 - **Decision**: **francecentral** for every AegisFlow resource (single region); westeurope is the
   fallback only if a SKU is unavailable there. Bicep keeps `location` as a parameter.
 - **Consequences**: Bicep takes `location` as a parameter; no multi-region.
-- **Status**: Accepted (owner delegated to the recommendation) — **Date**: 2026-10-26
+- **Status**: Accepted (owner choice) — **Date**: 2026-10-26. **Caveat (ADR-018)**: Phase 4 runs on a
+  new Azure for Students subscription, whose allowed-regions policy must be re-checked when it exists.
 
 ### ADR-014 — Repository visibility and GitHub feature strategy
 - **Context**: `imadboulyakine/AegisFlow` is **private** on a personal account (plan unknown; Student
@@ -200,11 +202,13 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
 - **Consequences**: Public repo exposes code and workflows (they contain no secrets by design); fork-PR
   workflows must stay unprivileged (`pull_request`, never `pull_request_target` with PR checkout). If the
   owner/school requires privacy, (b) is adopted and SECURITY_MODEL.md §7 limitations become thesis limits.
-- **Owner decision (2026-10-26)**: recommendation (a) adopted. Phase 1a adds OSS scanners while
-  private; signing/provenance (keyless cosign + `actions/attest`) is the last Phase 1 step, done right
-  after the visibility switch. The switch itself is an owner action (repo setting), preceded by a
-  clean full-history gitleaks scan, `SECURITY.md` and a licence (Apache-2.0 recommended — owner to
-  confirm the school has no IP clause).
+- **Owner decision (2026-10-26)**: **make the repository public now** (option a, earlier than the
+  recommended "end of Phase 1"); licence **Apache-2.0**; signing = **keyless cosign + `actions/attest`
+  once public** (no keyless signing while private). Pre-flight done before the switch: full-history
+  gitleaks scan (only finding: a synthetic request-ID test fixture), no real GUIDs/e-mail in history,
+  `SECURITY.md` and `LICENSE` added. The switch itself is an owner action (repo setting). OSS scanners
+  stay in the pipeline; code-scanning SARIF uploads, CodeQL and dependency review run only when
+  `github.event.repository.visibility == 'public'`. GitHub plan: **Pro** (owner, Student Pack).
 - **Status**: Accepted — **Date**: 2026-10-26
 
 ### ADR-015 — Scanner and signing tool pinning
@@ -249,6 +253,19 @@ ARCHITECTURE.md §13, SECURITY_MODEL.md §11 and AZURE_COSTS.md §6.
   the GitHub OIDC identity its roles.
 - **Status**: Accepted (owner decision) — **Date**: 2026-10-26
 
+### ADR-018 — Phase 4 hosting, budget and CI identity
+- **Context**: The current subscription is a free trial (30-day credit) that holds the owner's other
+  labs; Phase 4 is ~10 weeks away.
+- **Decision (owner)**: Phase 4 deploys into a **new Azure for Students subscription**; resource-group
+  budget **$50/month** with alerts at 50/80/100 % actual and 100 % forecast; GitHub Actions
+  authenticates with a **user-assigned managed identity + GitHub OIDC federated credential**, scoped
+  to the AegisFlow resource group; region francecentral (ADR-013) if the Students subscription allows it.
+- **Consequences**: The service principal of ADR-017 lives on the trial subscription and will not
+  reach the Students subscription — Phase 4 needs new owner-side setup (subscription, RG, role
+  assignment for the UAMI). Students subscriptions may restrict regions/SKUs: verify before writing
+  Bicep defaults. $50 leaves room for demo weeks; idle target stays ≈ $6–11/month.
+- **Status**: Accepted — **Date**: 2026-10-26
+
 ---
 
 ## GitHub plan constraints (summary for ADR-014)
@@ -265,18 +282,20 @@ matrix and signing-privacy analysis in SECURITY_MODEL.md §7.
 
 ## Owner decisions (2026-10-26)
 
-The owner asked to adopt the recommended answer for each open question. Facts marked [V] were
-verified with read-only Azure Resource Manager queries on 2026-10-26.
+Asked one by one; the owner chose each answer. Facts marked [V] come from read-only Azure Resource
+Manager queries on 2026-10-26.
 
-| # | Question | Answer | Status |
+| # | Question | Owner's answer | Notes |
 |---|---|---|---|
-| Q1 | Repository visibility | Private through Phase 1a; switch to **public at the end of Phase 1** (ADR-014) | Decided |
-| Q2 | GitHub plan | Unknown — **assume Free** (no rulesets/environments on private repos) until verified | Assumption |
-| Q3 | Keyless signing while private | **No** — sign keylessly + `actions/attest` only after going public | Decided |
-| Q4 | Azure subscription type | [V] Azure **free account** (`FreeTrial`, spending limit on); $0 in Sept, $37.49 month-to-date in Oct in the owner's other lab RGs. Free-trial credit expires 30 days after sign-up, so Phase 4 will most likely need an upgrade to pay-as-you-go (12-month free services incl. PostgreSQL B1ms 750 h/month remain) | Decided; owner to check credit balance/expiry in the portal |
-| Q5 | Allowed regions | [V] No allowed-locations policy → **francecentral** (ADR-013) | Decided |
-| Q6 | Entra identity for CI | Use a **user-assigned managed identity with a GitHub federated credential** (no app registration needed); the existing SP (Contributor @ subscription [V]) cannot create role assignments → owner grants roles in Phase 4 | Decided |
-| Q7 | Budget | **$20/month** budget scoped to the AegisFlow resource group, alerts at 50/80/100 % actual and 100 % forecast; alert e-mail supplied at deploy time (never committed). Created as the first Phase 4 resource | Decided |
-| Q8 | Custom domain | **No** — default `*.azurecontainerapps.io` URL with managed TLS | Decided |
-| Q9 | Thesis language / defence date | Repo docs stay in **English**; thesis language follows the school's rules (not blocking before Phase 6) | Partly open |
-| Q10 | Dashboard users | **Owner only**; supervisor/jury see a live demo (Entra guest access only if required) | Decided |
+| Q1 | Repository visibility | **Public now** | Owner flips the setting; pre-flight scan clean (ADR-014) |
+| Q2 | GitHub plan | **Pro** (Student Developer Pack) | Rulesets/environments available |
+| Q3 | Signing | **Keyless cosign + `actions/attest` after the repo is public** | Recommended option |
+| Q4 | Funding for Phase 4 | **Azure for Students** subscription | [V] current sub is a free trial (spending limit on) — ADR-018 |
+| Q5 | Region | **France Central** | [V] no region policy on the trial sub; re-check on the Students sub |
+| Q6 | CI identity | **User-assigned managed identity + OIDC** | Recommended option |
+| Q7 | Budget | **$50/month** on the AegisFlow resource group | Alerts 50/80/100 % actual, 100 % forecast |
+| Q8 | Custom domain | **No** — default `*.azurecontainerapps.io` | Recommended option |
+| Q9 | Thesis language / defence date | **English**; defence date **not fixed yet** | Revisit the schedule when the date is known |
+| Q10 | Dashboard users | **Only the owner** | Supervisor/jury via live demo |
+| — | Licence | **Apache-2.0** | `LICENSE` added |
+| — | Azure credentials in sessions | **Use them** (ADR-017) | Owner's explicit instruction |

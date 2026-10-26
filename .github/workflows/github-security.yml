@@ -1,0 +1,82 @@
+# GitHub-native security analysis (ADR-014): CodeQL code scanning and dependency review.
+#
+# Both features are free on public repositories only. Every job is therefore gated on
+# `github.event.repository.visibility == 'public'` (a missing value evaluates to false), so the
+# workflow is a no-op while the repository is private and starts working once it is public.
+#
+# Supply-chain rules as in ci.yml: actions pinned to full commit SHAs, read-only token by default,
+# `security-events: write` only on the job that uploads results, no persisted credentials.
+name: GitHub security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "23 4 * * 1" # weekly re-analysis with updated CodeQL queries
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: github-security-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  codeql:
+    name: CodeQL · ${{ matrix.language }}
+    if: github.event.repository.visibility == 'public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    permissions:
+      contents: read
+      security-events: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - language: go
+            build-mode: autobuild # go build ./... works without the SPA (internal/webui/dist/.gitkeep)
+          - language: javascript-typescript
+            build-mode: none
+          - language: actions
+            build-mode: none
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go (version from go.mod toolchain directive)
+        if: matrix.language == 'go'
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: go.mod
+
+      - name: Initialize CodeQL
+        uses: github/codeql-action/init@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          languages: ${{ matrix.language }}
+          build-mode: ${{ matrix.build-mode }}
+          queries: security-extended
+
+      - name: Analyze
+        uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          category: /language:${{ matrix.language }}
+
+  dependency-review:
+    name: Dependency review
+    if: github.event_name == 'pull_request' && github.event.repository.visibility == 'public'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      # Compares the PR's dependency graph against the base branch through the GitHub API;
+      # no checkout needed. Fails on newly introduced high/critical advisories.
+      - name: Review dependency changes
+        uses: actions/dependency-review-action@a1d282b36b6f3519aa1f3fc636f609c47dddb294 # v5.0.0
+        with:
+          fail-on-severity: high
+          comment-summary-in-pr: never
