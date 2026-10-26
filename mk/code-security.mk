@@ -38,13 +38,13 @@ ZIZMOR_CONFIG := .github/zizmor.yml
 PYTHON ?= python3
 ZIZMOR_VENV ?= $(or $(XDG_CACHE_HOME),$(HOME)/.cache)/aegisflow/zizmor-$(ZIZMOR_VERSION)
 ZIZMOR := $(ZIZMOR_VENV)/bin/zizmor
-# Offline by default (no token in dev sessions). CI sets ZIZMOR_OFFLINE=0 and GH_TOKEN so the
+# Offline by default (no token in dev sessions). CI sets CS_ZIZMOR_OFFLINE=0 and GH_TOKEN so the
 # online audits (impostor commits, ref/version mismatch, known-vulnerable actions) also run.
-ZIZMOR_OFFLINE ?= 1
+CS_ZIZMOR_OFFLINE ?= 1
 # Gate: findings at or above BOTH thresholds fail; everything is still in the SARIF report.
 ZIZMOR_MIN_SEVERITY   ?= medium
 ZIZMOR_MIN_CONFIDENCE ?= medium
-ZIZMOR_FLAGS = --config $(ZIZMOR_CONFIG) --no-progress $(if $(filter 1,$(ZIZMOR_OFFLINE)),--offline)
+ZIZMOR_FLAGS = --config $(ZIZMOR_CONFIG) --no-progress $(if $(filter 1,$(CS_ZIZMOR_OFFLINE)),--offline)
 
 # Hardened, throwaway Semgrep container: read-only root FS, no capabilities, caller's uid (so
 # reports are not root-owned and git accepts the bind-mounted checkout), source mounted read-only.
@@ -117,14 +117,14 @@ $(ZIZMOR): $(ZIZMOR_REQUIREMENTS)
 	@touch "$@"
 
 .PHONY: zizmor
-zizmor: $(ZIZMOR) ## Audit GitHub Actions workflows and Dependabot config (zizmor; offline unless ZIZMOR_OFFLINE=0)
+zizmor: $(ZIZMOR) ## Audit GitHub Actions workflows and Dependabot config (zizmor; offline unless CS_ZIZMOR_OFFLINE=0)
 	@mkdir -p $(CS_REPORTS_DIR) && rm -f $(CS_REPORTS_DIR)/zizmor.sarif $(CS_REPORTS_DIR)/zizmor-summary.md
 	@"$(ZIZMOR)" --version
 	@"$(ZIZMOR)" $(ZIZMOR_FLAGS) --persona regular --format sarif --no-exit-codes .github \
 		> $(CS_REPORTS_DIR)/zizmor.sarif
 	@sarif=$(CS_REPORTS_DIR)/zizmor.sarif; \
 	{ \
-		echo "### Workflow security — zizmor $(ZIZMOR_VERSION)$(if $(filter 1,$(ZIZMOR_OFFLINE)), (offline audits only))"; echo; \
+		echo "### Workflow security — zizmor $(ZIZMOR_VERSION)$(if $(filter 1,$(CS_ZIZMOR_OFFLINE)), (offline audits only))"; echo; \
 		echo "- Findings (regular persona): $$(jq -r '[.runs[].results[].level] | group_by(.) | map("\(.[0]): \(length)") | join(", ") | if . == "" then "none" else . end' "$$sarif")"; \
 		echo "- Gate: severity >= $(ZIZMOR_MIN_SEVERITY) and confidence >= $(ZIZMOR_MIN_CONFIDENCE) fails (see job log)"; \
 		if [[ "$$(jq '[.runs[].results[]] | length' "$$sarif")" != 0 ]]; then \

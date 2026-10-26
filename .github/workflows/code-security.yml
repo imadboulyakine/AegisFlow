@@ -53,7 +53,7 @@ jobs:
       - name: zizmor
         env:
           GH_TOKEN: ${{ github.token }}
-        run: make zizmor ZIZMOR_OFFLINE=0 CS_REPORTS_DIR="$REPORTS"
+        run: make zizmor CS_ZIZMOR_OFFLINE=0 CS_REPORTS_DIR="$REPORTS"
 
       - name: Job summary
         if: ${{ !cancelled() }}
