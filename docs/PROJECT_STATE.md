@@ -4,15 +4,15 @@ Authoritative record of what exists, what was verified (command + result) and wh
 Update it in every PR that changes behaviour. Tested facts are marked **TESTED**; everything else
 is an **ASSUMPTION** or **PLANNED**.
 
-Last updated: 2026-10-26 — Phase 1 (secure CI foundation) — branch `claude/serene-franklin-lipl1f`
+Last updated: 2026-10-26 — Phase 2 (ingestion + risk) — branch `claude/serene-franklin-lipl1f`
 
 ## 1. Phase status
 
 | Phase | Status | Notes |
 |---|---|---|
 | 0 Bootstrap | **Done — merged** (PR #1, `8b7eb63`) | See §3, §4 |
-| 1 Secure CI foundation | **Implemented, PR #2 open** — public-only jobs (CodeQL, SARIF upload, signing, attestations) wait for the visibility switch | See §2.1, §3.1 |
-| 2 Ingestion + risk | **In progress** — 4 core packages built in parallel worktrees (OIDC verifier, normalizers, risk/intel, Postgres store); integration + PR #3 next | See SESSION_HANDOFF |
+| 1 Secure CI foundation | **Done — merged** (PR #2, `e19652e`); repo **public**; first public `main` run verified: CodeQL (go, js/ts, actions), SARIF uploads, SLSA provenance + SBOM attestation + cosign keyless signature, third-party verification incl. negative tests — all green | See §2.1, §3.1 |
+| 2 Ingestion + risk | **Implemented, PR #3** — OIDC verifier, normalizers, risk/intel, Postgres store, `/api/v1/ingest`, findings API, Vulnerabilities page | See §2.2, `docs/API.md` |
 | 3–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
 
 Nothing has been created in Azure. Read-only Azure discovery was run on 2026-10-26 with the
@@ -49,6 +49,18 @@ owner-authorised service principal (ADR-017; `scripts/azure/discover.py`). No se
 | Experiments E1 (secrets benchmark), E4 (overhead collector), E3 (tamper catalogue) | Done | `experiments/`, `mk/experiments.mk` |
 | SECURITY.md, Apache-2.0 LICENSE | Done | repo root |
 | Ruleset on `main` | **Owner action** after PR #2 shows the check names | — |
+
+## 2.2 Implementation status (Phase 2)
+
+| Component | Status | Where |
+|---|---|---|
+| GitHub Actions OIDC verifier (stdlib RS256/JWKS) + middleware | Done (97.8 %, 4 fuzz targets) | `internal/auth/ghoidc` (ADR-020) |
+| Normalizers: CycloneDX, SPDX, SARIF, Grype, govulncheck, OpenVEX | Done (98.7 %, 8 fuzz targets) | `internal/evidence/normalize` (ADR-022) |
+| KEV + EPSS feeds, snapshots; explainable risk engine + CVSS-only baseline | Done (97 % / 99.5 %, 6 fuzz targets) | `internal/intel`, `internal/risk` (ADR-012, ADR-023) |
+| PostgreSQL store: migrations, append-only triggers, ingest transaction | Done (92 % with DB, 14 integration tests) | `internal/store` (ADR-021) |
+| Ingest service + `POST /api/v1/ingest` (OIDC) + findings API (loopback dev flag only) + readiness DB check | Done | `internal/ingest`, `internal/server`, `cmd/aegisflow`, `docs/API.md` |
+| Dashboard Vulnerabilities page + finding detail with risk factors | Done | `web/src` |
+| CI uploads evidence to a running AegisFlow | **Not yet** — needs a deployed instance (Phase 4) | — |
 
 ## 3.1 Checks executed in Phase 1 (2026-10-26, cloud container)
 
