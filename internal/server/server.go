@@ -13,6 +13,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/imadboulyakine/aegisflow/internal/auth/ghoidc"
 	"github.com/imadboulyakine/aegisflow/internal/config"
 	"github.com/imadboulyakine/aegisflow/internal/version"
 )
@@ -25,7 +26,8 @@ const (
 	writeTimeout      = 30 * time.Second
 	idleTimeout       = 120 * time.Second
 	maxHeaderBytes    = 64 << 10 // 64 KiB
-	maxBodyBytes      = 1 << 20  // 1 MiB; no endpoint accepts large uploads yet
+	maxBodyBytes      = 1 << 20  // 1 MiB; only POST /api/v1/ingest accepts more (limitBody)
+	readyCheckTimeout = 2 * time.Second
 )
 
 // Options holds the dependencies of a Server. Zero values select sensible defaults.
@@ -37,6 +39,16 @@ type Options struct {
 	Static fs.FS
 	// Version overrides the build metadata (tests). Zero value uses version.Get().
 	Version version.Info
+
+	// Verifier authenticates CI uploads (GitHub Actions OIDC). Together with Ingester it enables
+	// POST /api/v1/ingest; when either is nil the route answers 503.
+	Verifier *ghoidc.Verifier
+	// Ingester stores and scores uploaded evidence.
+	Ingester Ingester
+	// Findings serves the read API (enabled only with cfg.DevReadOnlyAPI). Nil answers 503.
+	Findings FindingsReader
+	// Ready is an optional dependency check for /readyz (e.g. a database ping).
+	Ready func(context.Context) error
 }
 
 // Server is the AegisFlow HTTP server.
@@ -47,6 +59,11 @@ type Server struct {
 	ready   atomic.Bool
 	handler http.Handler
 	http    *http.Server
+
+	verifier *ghoidc.Verifier
+	ingester Ingester
+	findings FindingsReader
+	readyDep func(context.Context) error
 }
 
 // New builds a Server; it does not start listening.
@@ -64,7 +81,10 @@ func New(cfg config.Config, opts Options) (*Server, error) {
 		return nil, fmt.Errorf("load web UI: %w", err)
 	}
 
-	s := &Server{cfg: cfg, logger: logger, version: info}
+	s := &Server{
+		cfg: cfg, logger: logger, version: info,
+		verifier: opts.Verifier, ingester: opts.Ingester, findings: opts.Findings, readyDep: opts.Ready,
+	}
 	s.handler = s.newHandler(spa)
 	s.http = &http.Server{
 		Addr:              cfg.Addr,
@@ -86,6 +106,9 @@ func (s *Server) Handler() http.Handler { return s.handler }
 func (s *Server) newHandler(spa http.Handler) http.Handler {
 	api := http.NewServeMux()
 	api.HandleFunc("GET /api/v1/version", s.handleVersion)
+	api.Handle("POST "+ingestPath, s.ingestHandler())
+	api.Handle("GET /api/v1/findings", s.readAPI(s.handleListFindings))
+	api.Handle("GET /api/v1/findings/{id}", s.readAPI(s.handleGetFinding))
 	apiHandler := apiErrors(api)
 
 	mux := http.NewServeMux()
@@ -108,7 +131,7 @@ func (s *Server) newHandler(spa http.Handler) http.Handler {
 		accessLog(s.logger),
 		recoverPanics(s.logger),
 		csrf.Handler, // rejects cross-site unsafe-method requests (Sec-Fetch-Site / Origin)
-		func(h http.Handler) http.Handler { return http.MaxBytesHandler(h, maxBodyBytes) },
+		limitBody,    // 1 MiB, except POST /api/v1/ingest
 	)
 }
 

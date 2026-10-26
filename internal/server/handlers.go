@@ -1,11 +1,14 @@
 package server
 
 import (
+	"context"
 	"net/http"
 )
 
 type statusBody struct {
 	Status string `json:"status"`
+	// Checks reports dependency health when dependencies are configured.
+	Checks map[string]string `json:"checks,omitempty"`
 }
 
 // handleHealthz is the liveness probe: the process is up and serving HTTP.
@@ -14,14 +17,26 @@ func (s *Server) handleHealthz(w http.ResponseWriter, _ *http.Request) {
 	writeJSON(w, http.StatusOK, contentTypeJSON, statusBody{Status: "ok"})
 }
 
-// handleReadyz is the readiness probe: 503 while starting or draining for shutdown.
-// Later phases will add dependency checks (e.g. PostgreSQL) here, not in /healthz.
-func (s *Server) handleReadyz(w http.ResponseWriter, _ *http.Request) {
+// handleReadyz is the readiness probe: 503 while starting or draining for shutdown, or while a
+// configured dependency (PostgreSQL) is unreachable. Dependency checks live here, not in /healthz.
+func (s *Server) handleReadyz(w http.ResponseWriter, r *http.Request) {
 	if !s.ready.Load() {
 		writeJSON(w, http.StatusServiceUnavailable, contentTypeJSON, statusBody{Status: "not_ready"})
 		return
 	}
-	writeJSON(w, http.StatusOK, contentTypeJSON, statusBody{Status: "ready"})
+	if s.readyDep == nil {
+		writeJSON(w, http.StatusOK, contentTypeJSON, statusBody{Status: "ready"})
+		return
+	}
+	ctx, cancel := context.WithTimeout(r.Context(), readyCheckTimeout)
+	defer cancel()
+	if err := s.readyDep(ctx); err != nil {
+		s.logger.WarnContext(r.Context(), "readiness check failed", "dependency", "database", "error", err.Error())
+		writeJSON(w, http.StatusServiceUnavailable, contentTypeJSON,
+			statusBody{Status: "not_ready", Checks: map[string]string{"database": "unavailable"}})
+		return
+	}
+	writeJSON(w, http.StatusOK, contentTypeJSON, statusBody{Status: "ready", Checks: map[string]string{"database": "ok"}})
 }
 
 // handleVersion serves build metadata injected at link time.
@@ -35,7 +50,8 @@ func apiErrors(mux *http.ServeMux) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		h, pattern := mux.Handler(r)
 		if pattern != "" {
-			h.ServeHTTP(w, r)
+			// Serve through the mux (not h) so that wildcards ({id}) populate r.PathValue.
+			mux.ServeHTTP(w, r)
 			return
 		}
 		// No route matched: let the mux decide between 404 and 405 (and compute Allow),

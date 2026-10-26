@@ -90,7 +90,15 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		logger.Error("startup failed", slog.Any("error", err))
 		return exitError
 	}
-	srv, err := server.New(cfg, server.Options{Logger: logger, Static: static})
+	deps, err := setup(ctx, cfg, logger)
+	if err != nil {
+		logger.Error("startup failed", slog.Any("error", err))
+		return exitError
+	}
+	defer deps.close()
+	opts := deps.opts
+	opts.Logger, opts.Static = logger, static
+	srv, err := server.New(cfg, opts)
 	if err != nil {
 		logger.Error("startup failed", slog.Any("error", err))
 		return exitError
@@ -104,7 +112,11 @@ func run(ctx context.Context, args []string, getenv func(string) string, stdout,
 		slog.String("go_version", info.GoVersion),
 		slog.String("addr", cfg.Addr),
 		slog.String("log_level", cfg.LogLevel.String()),
+		slog.Bool("database", cfg.DatabaseURL != ""),
+		slog.Bool("ingest_enabled", opts.Ingester != nil),
+		slog.Bool("dev_readonly_api", cfg.DevReadOnlyAPI),
 	)
+	deps.start(ctx)
 	if err := srv.ListenAndServe(ctx); err != nil {
 		logger.Error("server stopped with error", slog.Any("error", err))
 		return exitError
