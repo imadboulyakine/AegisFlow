@@ -36,3 +36,7 @@ Thumbs.db
 !.vscode/extensions.json
 *.swp
 *~
+
+# --- Agent tooling ---
+# Isolated git worktrees created by coding-agent sessions.
+/.claude/worktrees/

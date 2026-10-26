@@ -31,7 +31,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       contents: read
-      security-events: write
+      security-events: write # upload CodeQL results to code scanning
     strategy:
       fail-fast: false
       matrix:
@@ -61,6 +61,12 @@ jobs:
           languages: ${{ matrix.language }}
           build-mode: ${{ matrix.build-mode }}
           queries: security-extended
+          # Semgrep rule test files are deliberately vulnerable snippets; experiment fixtures are
+          # synthetic. Neither ships in the product.
+          config: |
+            paths-ignore:
+              - .semgrep
+              - experiments/**/testdata
 
       - name: Analyze
         uses: github/codeql-action/analyze@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1

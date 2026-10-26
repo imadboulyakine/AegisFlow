@@ -1,0 +1,25 @@
+rules:
+  - id: go-tls-insecure-config
+    message: >-
+      Insecure TLS configuration: certificate verification disabled or a protocol version below
+      TLS 1.2 allowed. AegisFlow talks to CI, registries, Sigstore and Azure endpoints whose
+      identity is part of the evidence chain; never skip verification (use a custom RootCAs pool
+      for private CAs) and keep MinVersion >= tls.VersionTLS12.
+    severity: ERROR
+    languages: [go]
+    metadata:
+      category: security
+      cwe: ["CWE-295: Improper Certificate Validation", "CWE-327: Use of a Broken or Risky Cryptographic Algorithm"]
+      references:
+        - https://pkg.go.dev/crypto/tls#Config
+    pattern-either:
+      - pattern: "tls.Config{..., InsecureSkipVerify: true, ...}"
+      - pattern: $CFG.InsecureSkipVerify = true
+      - patterns:
+          - pattern-either:
+              - pattern: "tls.Config{..., MinVersion: $V, ...}"
+              - pattern: "tls.Config{..., MaxVersion: $V, ...}"
+              - pattern: $CFG.MinVersion = $V
+          - metavariable-regex:
+              metavariable: $V
+              regex: ^(tls\.)?Version(SSL30|TLS10|TLS11)$

@@ -1,0 +1,31 @@
+rules:
+  - id: go-http-server-missing-timeouts
+    message: >-
+      http.Server is missing at least one of ReadHeaderTimeout, ReadTimeout, WriteTimeout or
+      IdleTimeout. AegisFlow servers must bound every phase of a connection (Slowloris, idle
+      connection exhaustion); see internal/server/server.go for the reference configuration.
+    severity: ERROR
+    languages: [go]
+    metadata:
+      category: security
+      cwe: ["CWE-400: Uncontrolled Resource Consumption"]
+      references:
+        - https://pkg.go.dev/net/http#Server
+    pattern-either:
+      - patterns:
+          - pattern: http.Server{...}
+          - pattern-not: "http.Server{..., ReadHeaderTimeout: $T, ...}"
+      - patterns:
+          - pattern: http.Server{...}
+          - pattern-not: "http.Server{..., ReadTimeout: $T, ...}"
+      - patterns:
+          - pattern: http.Server{...}
+          - pattern-not: "http.Server{..., WriteTimeout: $T, ...}"
+      - patterns:
+          - pattern: http.Server{...}
+          - pattern-not: "http.Server{..., IdleTimeout: $T, ...}"
+      # The package-level helpers use a zero-value http.Server: no timeouts at all.
+      - pattern: http.ListenAndServe(...)
+      - pattern: http.ListenAndServeTLS(...)
+      - pattern: http.Serve(...)
+      - pattern: http.ServeTLS(...)

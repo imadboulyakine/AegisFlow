@@ -1,0 +1,185 @@
+# Code security (Phase 1a): workflow security, secrets and SAST for AegisFlow itself.
+#
+# Every scan job calls the same make targets as local development (mk/code-security.mk), so tool
+# versions, flags and gates have one source of truth. Reports (SARIF + JSON) are kept as workflow
+# artifacts for 7 days and summarised in the job summary; they are the evidence that later phases
+# ingest. When the repository is public, a separate job uploads the SARIF files to code scanning.
+#
+# Supply-chain rules (ADR-006, ADR-015): actions pinned to full commit SHAs; tools pinned by
+# version + checksum (gitleaks via `go run`, zizmor via hash-locked PyPI wheels, Semgrep via image
+# digest); read-only token in every scan job; untrusted event data never interpolated into `run:`.
+name: Code security
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  schedule:
+    - cron: "17 5 * * 1" # Mondays 05:17 UTC: new rules and advisories even without code changes
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: code-security-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  REPORTS: bin/reports/code-security # passed to make as CS_REPORTS_DIR
+
+jobs:
+  workflows:
+    name: Workflows · actionlint, zizmor
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Set up Go (for actionlint, built from source)
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache: false # actionlint builds cold in seconds; a cache would cost more than it saves
+
+      - name: actionlint (with shellcheck from the runner image)
+        run: make actionlint
+
+      # Online audits (impostor commits, tag/SHA mismatch, known-vulnerable actions) need a token;
+      # the job token is read-only (contents: read).
+      - name: zizmor
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: make zizmor ZIZMOR_OFFLINE=0 CS_REPORTS_DIR="$REPORTS"
+
+      - name: Job summary
+        if: ${{ !cancelled() }}
+        run: cat "$REPORTS/zizmor-summary.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: code-security-zizmor
+          path: ${{ env.REPORTS }}/zizmor.sarif
+          retention-days: 7
+          if-no-files-found: warn
+
+  secrets:
+    name: Secrets · gitleaks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      # Full history: pull requests scan base..head (only the PR's commits), every other event
+      # scans all refs.
+      - name: Checkout (full history)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Set up Go (for gitleaks, built from source)
+        uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version-file: go.mod
+          cache-dependency-path: mk/code-security.mk # cache key follows GITLEAKS_VERSION bumps
+
+      - name: gitleaks (redacted)
+        env:
+          GITLEAKS_LOG_OPTS: ${{ github.event_name == 'pull_request' && format('{0}..{1}', github.event.pull_request.base.sha, github.event.pull_request.head.sha) || '' }}
+        run: make secrets CS_REPORTS_DIR="$REPORTS"
+
+      - name: Job summary
+        if: ${{ !cancelled() }}
+        run: cat "$REPORTS/gitleaks-summary.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: code-security-gitleaks
+          path: ${{ env.REPORTS }}/gitleaks.sarif
+          retention-days: 7
+          if-no-files-found: warn
+
+  sast:
+    name: SAST · Semgrep
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - name: Checkout
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Semgrep rule tests
+        run: make sast-test
+
+      # Repo rules + registry packs; fails on ERROR (CRITICAL/HIGH) findings only.
+      - name: Semgrep scan
+        run: make sast SEMGREP_USE_REGISTRY=1 CS_REPORTS_DIR="$REPORTS"
+
+      - name: Job summary
+        if: ${{ !cancelled() }}
+        run: cat "$REPORTS/semgrep-summary.md" >> "$GITHUB_STEP_SUMMARY" 2>/dev/null || true
+
+      - name: Upload report
+        if: ${{ !cancelled() }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: code-security-semgrep
+          path: |
+            ${{ env.REPORTS }}/semgrep.sarif
+            ${{ env.REPORTS }}/semgrep.json
+          retention-days: 7
+          if-no-files-found: warn
+
+  # Only this job holds a write-scoped token, and it runs no scanner code. It is skipped (no
+  # minutes used) while the repository is private: code scanning needs a public repo on our plan
+  # (ADR-014). A missing visibility value (e.g. schedule payloads) also skips it, as do fork PRs,
+  # whose token cannot write security events.
+  code-scanning:
+    name: Code scanning · upload SARIF
+    needs: [workflows, secrets, sast]
+    if: ${{ !cancelled() && github.event.repository.visibility == 'public' && (github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository) }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    permissions:
+      contents: read
+      security-events: write # upload SARIF to code scanning (public repo only)
+    steps:
+      - name: Checkout (source for alert fingerprints)
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+
+      - name: Download reports
+        uses: actions/download-artifact@9000827ccba6bdab643e8b6fd33ac0654aef8333 # v8.0.2
+        with:
+          pattern: code-security-*
+          path: code-scanning-sarif # inside the workspace: hashFiles() only sees workspace files
+          merge-multiple: true
+
+      - name: Upload zizmor SARIF
+        if: ${{ hashFiles('code-scanning-sarif/zizmor.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          sarif_file: code-scanning-sarif/zizmor.sarif
+          category: zizmor
+
+      - name: Upload gitleaks SARIF
+        if: ${{ hashFiles('code-scanning-sarif/gitleaks.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          sarif_file: code-scanning-sarif/gitleaks.sarif
+          category: gitleaks
+
+      - name: Upload Semgrep SARIF
+        if: ${{ hashFiles('code-scanning-sarif/semgrep.sarif') != '' }}
+        uses: github/codeql-action/upload-sarif@9b3254085494b55a0f7c4c2b3d2d52cc712ce370 # v4.39.1
+        with:
+          sarif_file: code-scanning-sarif/semgrep.sarif
+          category: semgrep

@@ -1,0 +1,52 @@
+rules:
+  - id: go-slog-sensitive-data
+    message: >-
+      Possible secret written to the structured log: an attribute named like a credential, the raw
+      request header map, cookies or a credential header. AGENTS.md forbids logging secrets, tokens
+      or request bodies; log a fingerprint, a boolean (e.g. "token_present") or the verified claim instead.
+    severity: ERROR
+    languages: [go]
+    metadata:
+      category: security
+      cwe: ["CWE-532: Insertion of Sensitive Information into Log File"]
+      references:
+        - https://pkg.go.dev/log/slog
+    pattern-either:
+      # Typed attributes: slog.String("token", v), slog.Any("authorization", v), slog.Attr{Key: ...}.
+      - patterns:
+          - pattern-either:
+              - pattern: slog.String("$KEY", ...)
+              - pattern: slog.Any("$KEY", ...)
+              - pattern: slog.Group("$KEY", ...)
+              - pattern: 'slog.Attr{Key: "$KEY", ...}'
+          - metavariable-regex:
+              metavariable: $KEY
+              regex: (?i)^(?:.*[_.\-])?(?:authorization|auth[_\-]?header|bearer|passw(?:or)?d|secret|client[_\-]?secret|token|access[_\-]?token|refresh[_\-]?token|id[_\-]?token|api[_\-]?key|cookie|set[_\-]?cookie|session[_\-]?id|private[_\-]?key|connection[_\-]?string|sas)$
+      # Key/value pairs: logger.Info("msg", "token", v), logger.InfoContext(ctx, "msg", "password", v),
+      # logger.With("api_key", v).
+      - patterns:
+          - pattern: $LOGGER.$METHOD(..., "$KEY", $VALUE, ...)
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(Debug|Info|Warn|Error|DebugContext|InfoContext|WarnContext|ErrorContext|With)$
+          - metavariable-regex:
+              metavariable: $KEY
+              regex: (?i)^(?:.*[_.\-])?(?:authorization|auth[_\-]?header|bearer|passw(?:or)?d|secret|client[_\-]?secret|token|access[_\-]?token|refresh[_\-]?token|id[_\-]?token|api[_\-]?key|cookie|set[_\-]?cookie|session[_\-]?id|private[_\-]?key|connection[_\-]?string|sas)$
+      # Whole header maps, cookies or credential headers passed to a logging call.
+      - patterns:
+          - pattern-inside: $LOGGER.$METHOD(...)
+          - metavariable-regex:
+              metavariable: $METHOD
+              regex: ^(String|Any|Group|Debug|Info|Warn|Error|Log|LogAttrs|DebugContext|InfoContext|WarnContext|ErrorContext|With)$
+          - pattern-either:
+              - patterns:
+                  - pattern: $REQ.Header
+                  - pattern-not-inside: $REQ.Header.$HMETHOD(...)
+              - pattern: $REQ.Cookies()
+              - patterns:
+                  - pattern-either:
+                      - pattern: $REQ.Header.Get("$HDR")
+                      - pattern: $REQ.Header.Values("$HDR")
+                  - metavariable-regex:
+                      metavariable: $HDR
+                      regex: (?i)^(authorization|proxy-authorization|cookie|set-cookie|x-api-key|x-auth-token|x-amz-security-token)$

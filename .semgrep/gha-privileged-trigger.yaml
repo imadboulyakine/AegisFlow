@@ -1,0 +1,41 @@
+rules:
+  - id: gha-privileged-trigger
+    message: >-
+      Workflow uses a privileged trigger (pull_request_target / workflow_run). These run with the
+      base repository's write token and secrets while processing data from forks, the root cause of
+      most Actions supply-chain compromises. AegisFlow workflows use `pull_request` only (ADR-006,
+      ADR-014); a privileged trigger needs a dedicated ADR and an isolated, no-checkout design.
+    severity: ERROR
+    languages: [yaml]
+    paths:
+      include:
+        - /.github/workflows/
+    metadata:
+      category: security
+      cwe: ["CWE-829: Inclusion of Functionality from Untrusted Control Sphere"]
+      references:
+        - https://securitylab.github.com/resources/github-actions-preventing-pwn-requests/
+    pattern-either:
+      - patterns:
+          - pattern-inside: |
+              on: $TRIGGER
+          - pattern: $TRIGGER
+          - metavariable-regex:
+              metavariable: $TRIGGER
+              regex: ^(pull_request_target|workflow_run)$
+      - patterns:
+          - pattern-inside: |
+              on: [..., $TRIGGER, ...]
+          - pattern: $TRIGGER
+          - metavariable-regex:
+              metavariable: $TRIGGER
+              regex: ^(pull_request_target|workflow_run)$
+      - patterns:
+          - pattern-inside: |
+              on:
+                ...
+          - pattern: |
+              $TRIGGER: $CFG
+          - metavariable-regex:
+              metavariable: $TRIGGER
+              regex: ^(pull_request_target|workflow_run)$

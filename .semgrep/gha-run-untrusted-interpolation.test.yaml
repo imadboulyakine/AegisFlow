@@ -1,0 +1,28 @@
+# Test cases for gha-run-untrusted-interpolation (run: make sast-test). Not a real workflow.
+name: run-interpolation-fixture
+on: pull_request
+permissions:
+  contents: read
+jobs:
+  fixture:
+    runs-on: ubuntu-24.04
+    steps:
+      # ok: gha-run-untrusted-interpolation
+      - run: echo "title=$TITLE sha=${{ github.sha }}"
+        env:
+          TITLE: ${{ github.event.pull_request.title }}
+      # ruleid: gha-run-untrusted-interpolation
+      - run: echo "${{ github.event.pull_request.title }}"
+      - name: Multi-line script
+        # ruleid: gha-run-untrusted-interpolation
+        run: |
+          set -eu
+          git log --oneline "origin/${{ github.head_ref }}"
+      - name: Step output
+        # ruleid: gha-run-untrusted-interpolation
+        run: echo "${{ steps.meta.outputs.version }}"
+      - name: github-script
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          # ruleid: gha-run-untrusted-interpolation
+          script: console.log("${{ github.event.issue.body }}")

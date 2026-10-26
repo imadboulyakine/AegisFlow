@@ -1,0 +1,32 @@
+rules:
+  - id: go-exec-nonconstant-command
+    message: >-
+      Subprocess with a non-constant program name, or a shell invoked with a non-constant script.
+      AegisFlow will drive external scanners (syft, grype, cosign, ...): the program must be a
+      constant from an allow-list and untrusted data may only be passed as separate argv entries,
+      never through `sh -c`.
+    severity: ERROR
+    languages: [go]
+    metadata:
+      category: security
+      cwe: ["CWE-78: Improper Neutralization of Special Elements used in an OS Command"]
+      references:
+        - https://pkg.go.dev/os/exec#Command
+    pattern-either:
+      - patterns:
+          - pattern: exec.Command($NAME, ...)
+          - pattern-not: exec.Command("...", ...)
+      - patterns:
+          - pattern: exec.CommandContext($CTX, $NAME, ...)
+          - pattern-not: exec.CommandContext($CTX, "...", ...)
+      - patterns:
+          - pattern-either:
+              - pattern: exec.Command("$SHELL", "-c", $SCRIPT, ...)
+              - pattern: exec.CommandContext($CTX, "$SHELL", "-c", $SCRIPT, ...)
+          - metavariable-regex:
+              metavariable: $SHELL
+              regex: ^(/usr)?(/bin/)?(ba|da|z)?sh$
+          - metavariable-pattern:
+              metavariable: $SCRIPT
+              patterns:
+                - pattern-not: '"..."'
