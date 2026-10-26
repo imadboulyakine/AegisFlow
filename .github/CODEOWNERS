@@ -1,0 +1,7 @@
+# Default owner for everything in the repository.
+* @imadboulyakine
+
+# Security-sensitive paths (CI/CD, container, IaC) — explicit for clarity.
+/.github/ @imadboulyakine
+/Dockerfile @imadboulyakine
+/infra/ @imadboulyakine

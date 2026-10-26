@@ -1,0 +1,8 @@
+# Bun configuration for the AegisFlow web app.
+
+[install]
+# Always pin exact versions when adding dependencies (no ^ or ~ ranges).
+exact = true
+# Supply-chain cooldown: refuse to resolve package versions published less than
+# 3 days ago, which blunts most "malicious release" npm compromises.
+minimumReleaseAge = 259200

@@ -1,0 +1,27 @@
+# Allow-list build context: send only what the Dockerfile needs. Everything else
+# (.git, docs/, bin/, node_modules/, local env files, coverage, editor state...) stays out,
+# which keeps builds fast and prevents secrets or stale artifacts from leaking into layers.
+*
+
+!go.mod
+!go.sum
+!cmd/
+!internal/
+!web/
+
+# Generated / installed content inside allowed directories.
+web/node_modules/
+web/dist/
+internal/webui/dist/*
+!internal/webui/dist/.gitkeep
+
+# Tests are not part of the image; excluding them avoids needless cache busts.
+**/*_test.go
+web/**/*.test.ts
+web/**/*.test.tsx
+
+# Never send local env/secret files even if they appear under an allowed directory.
+**/.env
+**/.env.*
+**/*.pem
+**/*.key

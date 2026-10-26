@@ -1,0 +1,62 @@
+# Local development stack. Not used for any deployment.
+#
+#   docker compose up --build                 # AegisFlow only
+#   docker compose --profile db up --build    # + PostgreSQL (Phase 2+ persistence, ADR-007)
+name: aegisflow
+
+services:
+  aegisflow:
+    build:
+      context: .
+      args:
+        VERSION: ${VERSION:-dev}
+        COMMIT: ${COMMIT:-unknown}
+        BUILD_DATE: ${BUILD_DATE:-unknown}
+    image: aegisflow:dev
+    environment:
+      AEGISFLOW_ADDR: ":8080"
+      AEGISFLOW_LOG_LEVEL: ${AEGISFLOW_LOG_LEVEL:-info}
+      AEGISFLOW_SHUTDOWN_TIMEOUT: 10s
+    ports:
+      - "127.0.0.1:8080:8080" # loopback only
+    # Hardening that mirrors the production runtime: immutable root filesystem,
+    # no Linux capabilities, no privilege escalation, non-root UID, bounded resources.
+    read_only: true
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    user: "65532:65532"
+    pids_limit: 128
+    mem_limit: 256m
+    cpus: 1.0
+    stop_grace_period: 15s # > AEGISFLOW_SHUTDOWN_TIMEOUT so graceful shutdown can finish
+    restart: unless-stopped
+    # Healthcheck comes from the image (HEALTHCHECK CMD ["/aegisflow", "-healthcheck"]).
+
+  # Phase 2+ (ADR-007). Opt-in only: `docker compose --profile db up`.
+  # LOCAL DEVELOPMENT ONLY: the password default below is a throwaway value for a
+  # loopback-bound container. Real environments use Azure Database for PostgreSQL with
+  # credentials from Key Vault / Managed Identity, never this file.
+  postgres:
+    profiles: ["db"]
+    image: postgres:18.4-alpine@sha256:9a8afca54e7861fd90fab5fdf4c42477a6b1cb7d293595148e674e0a3181de15
+    environment:
+      POSTGRES_DB: aegisflow
+      POSTGRES_USER: aegisflow
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-aegisflow-local-dev-only}
+    ports:
+      - "127.0.0.1:5432:5432" # loopback only
+    volumes:
+      - pgdata:/var/lib/postgresql
+    security_opt:
+      - no-new-privileges:true
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U aegisflow -d aegisflow"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+volumes:
+  pgdata:

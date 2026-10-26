@@ -1,0 +1,9 @@
+/** AegisFlow shield logo, drawn inline so it needs no image request (and no data: URI under the CSP). */
+export function BrandMark() {
+  return (
+    <svg className="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+      <path fill="#2563eb" d="M16 2 4 6.5v8.2c0 7.4 5.1 13.6 12 15.3 6.9-1.7 12-7.9 12-15.3V6.5L16 2z" />
+      <path fill="#fff" d="m14.2 20.6-4.4-4.4 1.8-1.8 2.6 2.6 6.2-6.2 1.8 1.8z" />
+    </svg>
+  );
+}
