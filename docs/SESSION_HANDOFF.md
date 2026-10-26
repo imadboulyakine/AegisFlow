@@ -3,75 +3,69 @@
 Read this first. It is rewritten at the end of every session so the next one (human or agent) can
 continue from the repository alone. Then read `PROJECT_STATE.md`, `ROADMAP.md`, `DECISIONS.md`.
 
-Last session: 2026-10-26 — Phase 0 bootstrap — branch `claude/serene-franklin-lipl1f` → PR into `main`
+Last session: 2026-10-26 — Phase 1 implemented (PR #2), Phase 2 core packages in progress —
+branch `claude/serene-franklin-lipl1f`
 
 ## 1. What was done
 
-- Created `main` with an empty root commit (the repo was empty; PRs need a base branch).
-- Ran a capability audit of the Claude Code cloud container (results: `PROJECT_STATE.md` §4).
-- Wrote the project memory: `AGENTS.md` (canonical agent rules), `CLAUDE.md` (imports it),
-  `docs/ARCHITECTURE.md`, `SECURITY_MODEL.md`, `AZURE_COSTS.md`, `ROADMAP.md`, `DECISIONS.md`
-  (ADR-001…016), `PROJECT_STATE.md`, this file.
-- Bootstrapped the code: Go 1.27 single binary (stdlib only) with probes, versioned API, embedded
-  React 19 SPA built by Bun, hardened middleware; distroless nonroot Dockerfile; compose; Makefile;
-  GitHub Actions CI (SHA-pinned, read-only token); Dependabot; CODEOWNERS; PR template.
-- Verified locally: `make lint`, `make test` (96 % Go coverage, 56 bun tests), `make build`,
-  `make actionlint`, binary + container + browser smoke tests. Details: `PROJECT_STATE.md` §3.
-- Work was split across three parallel subagents (environment audit, architecture/cost research,
-  code bootstrap); the lead session reviewed, re-verified and committed everything.
+- **Phase 0 merged** (PR #1). Owner answered Q1–Q10 personally (DECISIONS.md "Owner decisions"):
+  repo **public now**, GitHub **Pro**, keyless signing once public, **Apache-2.0**, France Central,
+  **Azure for Students** subscription for Phase 4 with a **$50/month** budget, UAMI + OIDC, default
+  ACA URL, owner-only dashboard, English thesis, defence date not fixed. Owner also authorised agent
+  sessions to use the `AZURE_*` service principal (ADR-017); read-only discovery done
+  (`scripts/azure/discover.py`, facts in PROJECT_STATE §4.1).
+- **Phase 1** (subagents in parallel, lead verified and committed): `code-security.yml`,
+  `supply-chain.yml`, `github-security.yml`, `provenance.yml`, `mk/*.mk` fragments, experiments E1/E4/E3,
+  `SECURITY.md`, `LICENSE`, `docs/VERIFY.md`, ADR-018/019. All local gates green (PROJECT_STATE §3.1).
+- **Phase 2 core packages** started in isolated git worktrees (`.claude/worktrees/agent-*`, local
+  branches `worktree-agent-*`, not pushed), all sharing `internal/evidence/model.go` (identical bytes):
+  - `internal/auth/ghoidc` — stdlib GitHub OIDC JWS/JWKS verifier + middleware — **done** (97.8 %).
+  - `internal/intel` + `internal/risk` — KEV/EPSS feeds + ADR-012 engine — **done** (97 % / 99.5 %).
+  - `internal/evidence/normalize` — CycloneDX/SPDX/SARIF/Grype/govulncheck/OpenVEX — in progress.
+  - `internal/store` — PostgreSQL (pgx v5), migrations, append-only triggers — in progress.
+  Reports: the subagent reports were in the session scratchpad; the essentials are below.
 
 ## 2. In progress / not verified yet
 
-- First CI run on GitHub for the Phase 0 PR: **green** (Go, Web, Container; ≈ 4m35s). PR #1 awaits the owner's merge.
-- **Dependabot config** (`cooldown`, `bun`, `docker-compose` ecosystems) — check Insights →
-  Dependency graph → Dependabot after merge.
+- PR #2 (Phase 1) CI run on GitHub; public-only jobs need the visibility switch.
+- If the worktrees are gone (new container), Phase 2 packages must be rebuilt from the briefs —
+  check `git branch -a` and `.claude/worktrees/` first.
 
-## 3. Owner decisions needed (blocking later phases)
+## 3. Owner actions
 
-1. **Azure credentials in the cloud environment (B1, urgent-ish)**: a service-principal client secret
-   is exposed to every agent session via environment variables. Remove it, or scope + rotate it.
-   Agents must not use it (AGENTS.md §3).
-2. **Q1–Q3 (ADR-014)**: public vs private repo, GitHub plan, keyless-signing metadata disclosure →
-   decides Phase 1 tooling (CodeQL/attestations vs OSS fallbacks).
-3. **Q4–Q8** before Phase 4: subscription type/credit, allowed regions, Entra app-registration
-   rights, budget, domain. **Q9–Q10**: thesis language/defence date, dashboard users.
-4. Enable branch protection / a ruleset on `main` after merging Phase 0 (plan-dependent).
+1. **Make the repository public** (Settings → General → Change visibility), then enable private
+   vulnerability reporting and secret scanning push protection (Settings → Security).
+2. Merge PR #2 when green; then add a ruleset on `main` requiring the CI checks, blocking force-push.
+3. Before Phase 4: create the Azure for Students subscription (the ADR-017 SP is on the trial sub).
 
-## 4. Next tasks (Phase 1 — secure CI foundation), in suggested order
+## 4. Next tasks (in order)
 
-Each is a self-contained PR; parallelisable ones are marked ∥.
-
-1. Owner merges PR #1 (CI already green), then enables branch protection on `main`.
-2. ∥ **Workflow security**: add `actionlint` + `zizmor` jobs (pinned, checksum-verified).
-3. ∥ **Secrets**: gitleaks on PR diff + scheduled full-history scan; `.gitleaks.toml` allow-list
-   for synthetic test fixtures only.
-4. ∥ **SCA**: govulncheck JSON (+ OpenVEX) and osv-scanner on `go.mod` + `web/bun.lock`, uploaded
-   as artifacts (retention 7 days).
-5. ∥ **SAST**: Semgrep OSS with vendored, pinned rules (registry is not reachable from agent
-   sessions); CodeQL only if ADR-014 → public. gosec already runs inside golangci-lint.
-6. **SBOM + image scan**: Syft (CycloneDX 1.6+/SPDX 2.3) for source and image; Grype on the SBOM in
-   CI (Grype DB is blocked locally — use Trivy DB via mirror.gcr.io for local checks).
-7. **Signing + provenance** per ADR-014 outcome: cosign key-based (test key, local) and/or keyless +
-   `actions/attest` in CI; document the verification command.
-8. `SECURITY.md`, licence choice (owner), experiment fixture skeletons under `testdata/` (E1–E3).
-9. Measure pipeline overhead baseline (experiment E4) and record it in `PROJECT_STATE.md`.
+1. Drive PR #2 to green and merged.
+2. Restart the branch from `main`; merge the four `worktree-agent-*` branches; resolve go.mod (pgx);
+   renumber the auth ADR (agent proposed "ADR-017", taken) → ADR-020 (stdlib JWS/JWKS), add ADR-021
+   (pgx v5) and ADR-022 (risk engine decisions: **VEX not_affected/fixed beats the KEV override**,
+   flagged `vex-conflict` when reachability says called; unknown exposure = 1.0 but never triggers the
+   override; feeds fail closed).
+3. Integrate: `AEGISFLOW_DATABASE_URL`/`AEGISFLOW_OIDC_*` config, `/api/v1/ingest` (OIDC middleware,
+   `CheckCommit`, normalize → store → risk), `/api/v1/findings`, dashboard pages, CI upload job with a
+   custom-audience OIDC token, Postgres service container in `ci.yml` for store integration tests.
+4. E1 follow-up arm: custom gitleaks rules (DB URIs, split lines) measured as a separate arm.
 
 ## 5. How to verify the current state quickly
 
 ```bash
-make lint test build          # all must pass
-make run                      # http://localhost:8080 — dashboard shows "Operational"
-curl -s localhost:8080/api/v1/version
+make lint test build     # all green
+make code-security       # actionlint, zizmor, gitleaks, semgrep tests + scan (Docker needed for Semgrep)
+make vuln GOVULNCHECK_FLAGS='-db file:///path/to/offline/govulndb'   # vuln.go.dev blocked in sandbox
+make e1                  # secrets benchmark (seeded)
 ```
-Container build in the cloud sandbox needs the proxy-CA recipe in `PROJECT_STATE.md` §6.3.
 
-## 6. Gotchas for the next session
+## 6. Gotchas
 
-- Host Go is 1.24.7 — never "fix" `go.mod` down; the toolchain line downloads 1.27.3.
-- Host `golangci-lint` (2.5.0) and `gofmt` are stale — always go through `make`.
-- vuln.go.dev, EPSS, NVD, OSV API, Grype DB, Sigstore, GitHub OIDC and prices.azure.com are blocked
-  from the container; use offline fixtures locally and run live checks in CI.
-- Docker Hub may 429 → `mirror.gcr.io` registry mirror; ghcr.io blobs are blocked.
-- The GitHub MCP tools can only reach `imadboulyakine/AegisFlow`.
-- Never run `az login` and never let Azure SDKs pick up the `AZURE_*` environment variables
-  (prefix commands with `env -u AZURE_CLIENT_ID -u AZURE_CLIENT_SECRET -u AZURE_TENANT_ID -u AZURE_SUBSCRIPTION_ID`).
+- Host Go is 1.24.7 — never downgrade `go.mod`; tools run with the go.mod toolchain via `make`.
+- Blocked here: vuln.go.dev, OSV API, Grype DB, NVD, EPSS, cisa.gov, Sigstore, GitHub OIDC tokens,
+  semgrep.dev, prices.azure.com. Use offline DBs/fixtures; live checks run in CI.
+- Docker Hub may 429 → `mirror.gcr.io`; `dockerd` may need restarting after a container pause.
+- Tool versions/digests in `mk/*.mk` are bumped manually (Dependabot cannot see them).
+- Parallel agents running `make test` at once race on `coverage.out`.
+- Azure: use the SP only per ADR-017 (never print the secret; writes only after Phase 4 approval).

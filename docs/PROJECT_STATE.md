@@ -4,15 +4,16 @@ Authoritative record of what exists, what was verified (command + result) and wh
 Update it in every PR that changes behaviour. Tested facts are marked **TESTED**; everything else
 is an **ASSUMPTION** or **PLANNED**.
 
-Last updated: 2026-10-26 — Phase 0 (bootstrap) — branch `claude/serene-franklin-lipl1f`
+Last updated: 2026-10-26 — Phase 1 (secure CI foundation) — branch `claude/serene-franklin-lipl1f`
 
 ## 1. Phase status
 
 | Phase | Status | Notes |
 |---|---|---|
-| 0 Bootstrap | **Done — CI green on GitHub**, PR #1 awaiting owner merge | See §3, §4 |
-| 1 Secure CI foundation | Not started | Blocked on owner answers Q1–Q3 (DECISIONS.md) for signing mode |
-| 2–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
+| 0 Bootstrap | **Done — merged** (PR #1, `8b7eb63`) | See §3, §4 |
+| 1 Secure CI foundation | **Implemented, PR #2 open** — public-only jobs (CodeQL, SARIF upload, signing, attestations) wait for the visibility switch | See §2.1, §3.1 |
+| 2 Ingestion + risk | **In progress** — 4 core packages built in parallel worktrees (OIDC verifier, normalizers, risk/intel, Postgres store); integration + PR #3 next | See SESSION_HANDOFF |
+| 3–6 | Not started | Phase 4 is the first billable phase (owner approval required) |
 
 Nothing has been created in Azure. Read-only Azure discovery was run on 2026-10-26 with the
 owner-authorised service principal (ADR-017; `scripts/azure/discover.py`). No secrets are committed.
@@ -36,6 +37,33 @@ owner-authorised service principal (ADR-017; `scripts/azure/discover.py`). No se
 | CODEOWNERS, PR template | Done | `.github/` |
 | Project memory docs | Done | `CLAUDE.md`, `AGENTS.md`, `docs/*` |
 | Bicep / `infra/` | Not started (Phase 4) | — |
+
+## 2.1 Implementation status (Phase 1)
+
+| Component | Status | Where |
+|---|---|---|
+| Secrets (gitleaks v8.30.1), SAST (Semgrep 1.182.0, 10 repo rules + registry packs), workflow security (zizmor 1.31.1, actionlint) | Done | `.github/workflows/code-security.yml`, `mk/code-security.mk`, `.gitleaks.toml`, `.semgrep/`, `.github/zizmor.yml` |
+| Go vulns (govulncheck + JSON/OpenVEX evidence), deps (osv-scanner v2.7.0 on go.mod + bun.lock), SBOMs (Syft v1.55.0, CycloneDX + SPDX), image scan (Grype v0.121.0) | Done | `.github/workflows/supply-chain.yml`, `mk/supply-chain.mk`, `.grype.yaml`, `osv-scanner.toml` |
+| CodeQL (Go, JS/TS, Actions) + dependency review | Done, **public-only** | `.github/workflows/github-security.yml` |
+| Keyless cosign + `actions/attest` SLSA provenance + SBOM attestation for the binary; reproducible build | Done, **public + main only** | `.github/workflows/provenance.yml`, `mk/provenance.mk`, `docs/VERIFY.md` |
+| Experiments E1 (secrets benchmark), E4 (overhead collector), E3 (tamper catalogue) | Done | `experiments/`, `mk/experiments.mk` |
+| SECURITY.md, Apache-2.0 LICENSE | Done | repo root |
+| Ruleset on `main` | **Owner action** after PR #2 shows the check names | — |
+
+## 3.1 Checks executed in Phase 1 (2026-10-26, cloud container)
+
+| Check | Result |
+|---|---|
+| `make lint` (gofmt, vet, golangci-lint v2.15.0, tsc) | **TESTED PASS** — 0 issues |
+| `make test` | **TESTED PASS** — bun 56/56; Go `-race` all packages, total 90.0 % (experiments e1 87.5 %, e4 92.1 %) |
+| `make actionlint`, zizmor `--persona pedantic` on all workflows + dependabot | **TESTED PASS** — 0 findings |
+| `make sast-test` / `make sast` | **TESTED PASS** — 10/10 rule tests; 0 blocking findings |
+| `make secrets` (full history, all refs) + gitleaks dir on new files | **TESTED PASS** — 0 findings (one synthetic fixture allow-listed narrowly) |
+| `make vuln` with offline OSV-derived DB | **TESTED PASS** — no vulnerabilities |
+| `make osv` (offline DB), `make sbom` | **TESTED PASS** (supply-chain agent) — bun.lock parsed (31 packages) |
+| Grype matching, osv/govulncheck live DBs, Semgrep registry, zizmor online audits, SARIF upload, CodeQL, Sigstore/attestations | **CI-ONLY** (blocked here) |
+| Reproducible build (two clean clones) | **TESTED PASS** (provenance agent) — identical sha256 |
+| `make e1` (seed 20261026) | **TESTED** — full history recall 0.74 / precision 0.97 (target recall ≥ 0.90 **not met**; misses: split-line secrets, PostgreSQL URIs, base64-wrapped key) |
 
 ## 3. Checks executed in Phase 0 (2026-10-26, cloud container)
 
